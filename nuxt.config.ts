@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import vuetify from 'vite-plugin-vuetify'
 import appConfig from './nuxt.app.config'
 import pwaConfig from './nuxt.pwa.config'
-import { $env } from './nuxt.env.config'
+import envConfig from './nuxt.env.config'
 
 /** @see https://nuxt.com/docs/api/configuration/nuxt-config */
 export default defineNuxtConfig({
@@ -29,6 +29,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   vite: {
-    define: { $env },
+    define: { $env: envConfig },
   },
 })
