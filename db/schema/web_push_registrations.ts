@@ -3,7 +3,6 @@ import {
   serial,
   text,
   timestamp,
-  uniqueIndex,
   varchar,
 } from 'drizzle-orm/mysql-core'
 
