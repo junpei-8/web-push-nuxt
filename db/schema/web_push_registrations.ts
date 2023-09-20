@@ -1,9 +1,23 @@
-import { mysqlTable, serial, text, timestamp } from 'drizzle-orm/mysql-core'
+import {
+  mysqlTable,
+  serial,
+  text,
+  timestamp,
+  uniqueIndex,
+} from 'drizzle-orm/mysql-core'
 
-export default mysqlTable('web_push_registrations', {
-  id: serial('id').primaryKey(),
-  endpoint: text('endpoint').notNull().unique(),
-  authKey: text('auth_key').notNull(),
-  p256dhKey: text('p256dh_key').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+const tableName = 'web_push_registrations'
+
+export default mysqlTable(
+  tableName,
+  {
+    id: serial('id').primaryKey(),
+    endpoint: text('endpoint').notNull(),
+    authKey: text('auth_key').notNull(),
+    p256dhKey: text('p256dh_key').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    endpointIndex: uniqueIndex(`ui_${tableName}_endpoint`).on(table.endpoint),
+  })
+)

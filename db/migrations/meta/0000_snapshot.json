@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "2eaec5bd-0709-42ab-9d61-b5e4de4a99e2",
+  "id": "d80603d1-ac8e-4711-9356-33c9856fac79",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "web_push_registrations": {
@@ -44,7 +44,15 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "ui_web_push_registrations_endpoint": {
+          "name": "ui_web_push_registrations_endpoint",
+          "columns": [
+            "endpoint"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "web_push_registrations_id": {
@@ -54,14 +62,7 @@
           ]
         }
       },
-      "uniqueConstraints": {
-        "web_push_registrations_endpoint_unique": {
-          "name": "web_push_registrations_endpoint_unique",
-          "columns": [
-            "endpoint"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     }
   },
   "schemas": {},
