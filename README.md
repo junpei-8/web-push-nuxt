@@ -33,7 +33,9 @@
 
 #### Runtime
 
-- [Bun](https://bun.sh)
+- [Deno](https://deno.land)
+
+<!-- - [Node.js](https://nodejs.org) -->
 
 #### Database
 
@@ -46,7 +48,7 @@
 
 ### Package Manager
 
-- [Bun](https://bun.sh)
+- [pnpm](https://pnpm.io)
 
 <br/>
 

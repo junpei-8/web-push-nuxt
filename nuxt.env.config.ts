@@ -1,5 +1,4 @@
 const $env = {
-  PROCESS_VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY as string,
   VAPID_PUBLIC_KEY: import.meta.env.VAPID_PUBLIC_KEY as string,
   VAPID_PRIVATE_KEY: import.meta.env.VAPID_PRIVATE_KEY as string,
   VAPID_EMAIL: import.meta.env.VAPID_EMAIL as string,
