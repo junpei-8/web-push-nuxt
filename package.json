@@ -6,8 +6,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/icons/logo.svg"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@fontsource-variable/noto-sans-jp": "^5.0.11",
@@ -16,6 +15,7 @@
     "nuxt": "^3.7.3",
     "sass": "^1.67.0",
     "vite-plugin-vuetify": "^1.0.2",
-    "vuetify": "^3.3.17"
+    "vuetify": "^3.3.17",
+    "workbox-build": "^7.0.0"
   }
 }
