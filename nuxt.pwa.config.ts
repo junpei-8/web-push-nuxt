@@ -1,13 +1,13 @@
 import { ModuleOptions } from '@vite-pwa/nuxt'
 
-export default <ModuleOptions>{
-  registerType: 'autoUpdate',
+export default {
+  // registerType: 'autoUpdate',
 
   includeAssets: ['app/favicon.ico'],
 
-  client: {
-    installPrompt: true,
-  },
+  // client: {
+  //   installPrompt: true,
+  // },
 
   manifest: {
     id: 'web-push-nuxt',
@@ -55,4 +55,4 @@ export default <ModuleOptions>{
     enabled: true,
     type: 'module',
   },
-}
+} satisfies ModuleOptions
