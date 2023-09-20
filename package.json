@@ -6,16 +6,22 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "migration:generate": "drizzle-kit generate:mysql --config ./db/config.ts"
   },
   "dependencies": {
     "@fontsource-variable/noto-sans-jp": "^5.0.11",
     "@nuxt/devtools": "^0.8.3",
     "@vite-pwa/nuxt": "^0.1.1",
+    "drizzle-orm": "^0.28.6",
     "nuxt": "^3.7.3",
     "sass": "^1.67.0",
     "vite-plugin-vuetify": "^1.0.2",
     "vuetify": "^3.3.17",
     "workbox-build": "^7.0.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.2",
+    "drizzle-kit": "^0.19.13"
   }
 }
