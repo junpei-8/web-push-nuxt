@@ -3,7 +3,6 @@ import { createVuetify } from 'vuetify'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const WHITE_TEXT = '#fff'
-  const BLACK_TEXT = '#18181B'
 
   nuxtApp.vueApp.use(
     /** @see https://vuetifyjs.com/en/getting-started/installation */
@@ -27,6 +26,6 @@ export default defineNuxtPlugin((nuxtApp) => {
           },
         },
       },
-    }),
+    })
   )
 })
