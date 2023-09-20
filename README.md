@@ -15,7 +15,15 @@
 #### Framework
 
 - [Nuxt](https://nuxt.com)
+
+#### UI
+
 - [Vuetify](https://vuetifyjs.com)
+- [vite-plugin-vuetify](https://www.npmjs.com/package/vite-plugin-vuetify)
+
+#### PWA
+
+- [Vite PWA](https://vite-pwa-org.netlify.app/)
 
 ### Backend
 
@@ -75,6 +83,16 @@ bun preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+<br/>
+
+## PWA
+
+> https://vite-pwa-org.netlify.app/assets-generator
+
+### Icon Generator
+
+> https://cthedot.de/icongen
 
 <br/>
 
