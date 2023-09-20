@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import './styles/global.scss'
 
-const env = $env
+const VAPID_PUBLIC_KEY = $env.VAPID_PUBLIC_KEY
+const PROCESS_VAPID_PUBLIC_KEY = $env.PROCESS_VAPID_PUBLIC_KEY
 </script>
 
 <template>
   <main class="main">
     <VBtn variant="text">Push Notification</VBtn>
-    <div>From import.meta.env: {{ env.VAPID_PUBLIC_KEY }}</div>
-    <div>From process.env: {{ env.PROCESS_VAPID_PUBLIC_KEY }}</div>
+    <div>From import_meta_env: {{ VAPID_PUBLIC_KEY }}</div>
+    <div>From process.env: {{ PROCESS_VAPID_PUBLIC_KEY }}</div>
   </main>
 </template>
 
