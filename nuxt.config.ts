@@ -30,5 +30,6 @@ export default defineNuxtConfig({
 
   vite: {
     define: { $env: envConfig },
+    build: { rollupOptions: { external: ['workbox-build'] } },
   },
 })

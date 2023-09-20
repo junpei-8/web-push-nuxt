@@ -1,6 +1,6 @@
 import { NuxtConfig } from 'nuxt/config'
 
-export default <NuxtConfig['app']>{
+export default {
   head: {
     meta: [{ name: 'apple-mobile-web-app-capable', content: 'yes' }],
     link: [
@@ -10,4 +10,4 @@ export default <NuxtConfig['app']>{
       { rel: 'apple-touch-icon', href: '/app/icon-apple-180x180.png' },
     ],
   },
-}
+} satisfies NuxtConfig['app']
