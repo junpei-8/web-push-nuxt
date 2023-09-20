@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    imports: [{ from: 'vuetify' }],
+    imports: [{ typeFrom: 'h3' }, { typeFrom: 'vuetify' }],
   },
 
   build: {
@@ -30,6 +30,5 @@ export default defineNuxtConfig({
 
   vite: {
     define: { $env: envConfig },
-    build: { rollupOptions: { external: ['workbox-build'] } },
   },
 })

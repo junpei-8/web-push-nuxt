@@ -1,9 +1,10 @@
 const $env = {
-  VAPID_PUBLIC_KEY: import.meta.env.VAPID_PUBLIC_KEY as string,
-  VAPID_PRIVATE_KEY: import.meta.env.VAPID_PRIVATE_KEY as string,
-  VAPID_EMAIL: import.meta.env.VAPID_EMAIL as string,
-  DATABASE_URL: import.meta.env.DATABASE_URL as string,
-  test: 'string',
+  VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY!,
+  VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY!,
+  VAPID_EMAIL: process.env.VAPID_EMAIL!,
+  DATABASE_URL: process.env.DATABASE_URL!,
+  DATABASE_USERNAME: process.env.DATABASE_USERNAME!,
+  DATABASE_PASSWORD: process.env.DATABASE_PASSWORD!,
 } as const
 
 type $Env = typeof $env

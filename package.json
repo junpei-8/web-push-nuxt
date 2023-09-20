@@ -7,21 +7,23 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "migration:generate": "drizzle-kit generate:mysql --config ./db/config.ts"
+    "migration:generate": "drizzle-kit generate:mysql --config ./db/config.ts",
+    "migration:drop": "drizzle-kit drop:mysql --config ./db/config.ts",
+    "migration:run": "node --loader esbuild-register/loader -r esbuild-register ./db/migrate.ts"
   },
   "dependencies": {
     "@fontsource-variable/noto-sans-jp": "^5.0.11",
     "@nuxt/devtools": "^0.8.3",
+    "@planetscale/database": "^1.11.0",
     "@vite-pwa/nuxt": "^0.1.1",
     "drizzle-orm": "^0.28.6",
     "nuxt": "^3.7.3",
     "sass": "^1.67.0",
     "vite-plugin-vuetify": "^1.0.2",
-    "vuetify": "^3.3.17",
-    "workbox-build": "^7.0.0"
+    "vuetify": "^3.3.17"
   },
   "devDependencies": {
-    "bun-types": "^1.0.2",
-    "drizzle-kit": "^0.19.13"
+    "drizzle-kit": "^0.19.13",
+    "esbuild-register": "^3.5.0"
   }
 }
