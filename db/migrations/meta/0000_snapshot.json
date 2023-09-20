@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "abbbf50e-7559-4030-b371-16a45b569fe6",
+  "id": "f0998e7a-14dd-4769-b17e-10cd34f95f20",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "web_push_registrations": {
@@ -16,7 +16,7 @@
         },
         "endpoint": {
           "name": "endpoint",
-          "type": "varchar(8000)",
+          "type": "varchar(3072)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
