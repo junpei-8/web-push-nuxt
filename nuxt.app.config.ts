@@ -2,6 +2,7 @@ import { NuxtConfig } from 'nuxt/config'
 
 export default {
   head: {
+    title: 'Web Push with Nuxt',
     meta: [{ name: 'apple-mobile-web-app-capable', content: 'yes' }],
     link: [
       { rel: 'manifest', href: '/manifest.webmanifest' },
