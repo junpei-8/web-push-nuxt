@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import './styles/global.scss'
-import { subscribeWebPush } from './services/web-push'
+import {
+  sendWebPush,
+  subscribeWebPush,
+  subscribeWebPushWithRequest,
+} from './services/web-push'
+
+subscribeWebPush()
 </script>
 
 <template>
   <main class="main">
-    <VBtn variant="text">Push Notification</VBtn>
-    <VBtn variant="text" @click="subscribeWebPush">Subscribe Web Push</VBtn>
+    <VBtn variant="text" @click="sendWebPush">Push Notification</VBtn>
+    <VBtn variant="text" @click="subscribeWebPushWithRequest"
+      >Subscribe Web Push</VBtn
+    >
   </main>
 </template>
 
