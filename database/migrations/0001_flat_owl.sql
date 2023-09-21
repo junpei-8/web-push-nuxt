@@ -1,4 +1,5 @@
 DROP TABLE `web_push_subscriptions`;
+--> statement-breakpoint
 CREATE TABLE `web_push_subscriptions` (
 	`id` serial AUTO_INCREMENT NOT NULL,
 	`endpoint` varchar(768) NOT NULL,
