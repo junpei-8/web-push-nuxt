@@ -1,4 +1,5 @@
 import { RequestOptions } from 'web-push'
+import $env from '~/nuxt.env.config'
 
 export const WEB_PUSH_OPTIONS = {
   vapidDetails: {

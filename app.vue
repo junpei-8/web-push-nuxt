@@ -7,6 +7,8 @@ import {
 } from './services/web-push'
 
 subscribeWebPush()
+
+const { data: greeting } = useFetch('/api/hello')
 </script>
 
 <template>
@@ -15,6 +17,10 @@ subscribeWebPush()
     <VBtn variant="text" @click="subscribeWebPushWithRequest"
       >Subscribe Web Push</VBtn
     >
+
+    <div v-if="greeting">
+      {{ greeting.greeting }}
+    </div>
   </main>
 </template>
 

@@ -34,6 +34,9 @@ export default defineNuxtConfig({
 
   vite: {
     define: { $env: envConfig },
-    plugins: [],
+  },
+
+  nitro: {
+    ignore: ['**/_/**/*'],
   },
 })
