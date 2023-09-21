@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import './styles/global.scss'
+import registerWebPushWorker from './services/register-web-push-worker'
 
-const VAPID_PUBLIC_KEY = $env.VAPID_PUBLIC_KEY
-
-const { data: hello } = useFetch('/api/hello')
+registerWebPushWorker()
 </script>
 
 <template>
   <main class="main">
     <VBtn variant="text">Push Notification</VBtn>
-    <div>From import_meta_env: {{ VAPID_PUBLIC_KEY }}</div>
-    <div>{{ hello?.greeting }}</div>
   </main>
 </template>
 

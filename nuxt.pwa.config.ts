@@ -1,6 +1,10 @@
 import { ModuleOptions } from '@vite-pwa/nuxt'
 
 export default {
+  scope: '/_sw',
+
+  filename: '_sw/sw.js',
+
   registerType: 'autoUpdate',
 
   includeAssets: ['app/favicon.ico'],

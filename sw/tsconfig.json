@@ -1,0 +1,16 @@
+{
+  "include": ["./scripts/**/*"],
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "baseUrl": ".",
+    "rootDir": ".",
+    "strict": true,
+    "declaration": false,
+    "skipLibCheck": false,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["WebWorker"]
+  }
+}
