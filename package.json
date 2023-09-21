@@ -4,11 +4,6 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "build:nuxt": "nuxt build",
-    "build:sw": "run-s build:sw:*",
-    "build:sw:clean": "rm -rf ./public/_sw",
-    "build:sw:tsc": "tsc --project ./service-workers/tsconfig.json --outDir ./public/_sw",
-    "build:sw:terser": "echo ./public/_sw/{*.js,**/*.js} | xargs -n1 sh -c 'terser --output ./public/_sw/${1#./public/_sw} --compress --mangle -- $1' argv0",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

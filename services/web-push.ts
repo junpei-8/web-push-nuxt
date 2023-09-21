@@ -34,7 +34,7 @@ export async function registerWebPushServiceWorker() {
       endpoint,
     }
 
-    fetch(`/api/web-push/subscription`, {
+    fetch(`/api/web-push/subscriptions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(subscriptionsDeleteRequest),
@@ -61,7 +61,7 @@ export async function registerWebPushServiceWorker() {
   }
 
   try {
-    await fetch(`/api/web-push/subscription`, {
+    await fetch(`/api/web-push/subscriptions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(subscriptionsPostRequest),
@@ -96,7 +96,7 @@ export function subscribeWebPush() {
 }
 
 export function sendWebPush() {
-  fetch(`/api/web-push/notification`, { method: 'POST' }).catch((error) =>
+  fetch(`/api/web-push/notifications`, { method: 'POST' }).catch((error) =>
     console.error(error)
   )
 }
