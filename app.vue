@@ -8,7 +8,7 @@ import {
 
 subscribeWebPush()
 
-const { data: greeting } = useFetch('/api/hello')
+const { data: greeting } = useLazyFetch('/api/hello')
 </script>
 
 <template>
