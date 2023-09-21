@@ -1,7 +1,7 @@
 import { ModuleOptions } from '@vite-pwa/nuxt'
 
 export default {
-  scope: '/_sw',
+  scope: '/_sw/',
 
   filename: '_sw/sw.js',
 

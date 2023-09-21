@@ -5,7 +5,7 @@ export default async function registerWebPushWorker() {
   if (!serviceWorker) return
 
   const register = await serviceWorker.register('/_sw/web-push.js', {
-    scope: '/_sw',
+    scope: '/_sw/',
   })
 
   console.log(register)
