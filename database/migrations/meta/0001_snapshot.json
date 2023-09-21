@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "4d1a1254-fe32-4e17-b4a7-2d970a9e4ff7",
+  "id": "1f9afe30-ce20-4dab-96cc-e6b0a692d6d4",
   "prevId": "6c97365a-a95d-4ec4-a17e-356794764d54",
   "tables": {
     "web_push_subscriptions": {
@@ -56,17 +56,13 @@
       "compositePrimaryKeys": {
         "web_push_subscriptions_id": {
           "name": "web_push_subscriptions_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "web_push_subscriptions_endpoint_unique": {
           "name": "web_push_subscriptions_endpoint_unique",
-          "columns": [
-            "endpoint"
-          ]
+          "columns": ["endpoint"]
         }
       }
     }
@@ -74,7 +70,9 @@
   "schemas": {},
   "_meta": {
     "schemas": {},
-    "tables": {},
+    "tables": {
+      "\"web_push_registrations\"": "\"web_push_subscriptions\""
+    },
     "columns": {}
   }
 }
