@@ -1,4 +1,5 @@
 const $env = {
+  IS_DEV: process.env.NODE_ENV === 'development',
   VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY!,
   VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY!,
   VAPID_EMAIL: process.env.VAPID_EMAIL!,

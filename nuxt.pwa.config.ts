@@ -1,9 +1,15 @@
 import { ModuleOptions } from '@vite-pwa/nuxt'
+import $env from './nuxt.env.config'
 
 export default {
-  scope: '/_sw/',
+  scope: $env.IS_DEV ? void 0 : '/_sw/',
 
-  filename: '_sw/sw.js',
+  filename: $env.IS_DEV ? void 0 : '_sw/sw.js',
+
+  workbox: {
+    globIgnores: $env.IS_DEV ? void 0 : ['**/node_modules/**/*', '**/_sw/**/*'],
+    navigateFallback: null,
+  },
 
   registerType: 'autoUpdate',
 
