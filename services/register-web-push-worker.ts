@@ -4,8 +4,8 @@ export default async function registerWebPushWorker() {
   const serviceWorker = navigator.serviceWorker
   if (!serviceWorker) return
 
-  const register = await serviceWorker.register('/_sw/web-push.js', {
-    scope: '/_sw/',
+  const register = await serviceWorker.register('/sw/web-push.js', {
+    scope: '/sw/',
   })
 
   console.log(register)

@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
   modules: [
     '@vite-pwa/nuxt',
-    nuxtModuleSw({ inputDir: './sw/scripts', outputDir: './public/_sw' }),
+    nuxtModuleSw({ inputDir: './sw/scripts', outputDir: './public/sw' }),
   ],
 
   hooks: {
@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    imports: [{ typeFrom: 'h3' }, { typeFrom: 'vuetify' }],
+    imports: [{ typeFrom: 'vuetify' }],
   },
 
   build: {

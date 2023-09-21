@@ -1,16 +1,6 @@
 import { ModuleOptions } from '@vite-pwa/nuxt'
-import $env from './nuxt.env.config'
 
 export default {
-  scope: $env.IS_DEV ? void 0 : '/_sw/',
-
-  filename: $env.IS_DEV ? void 0 : '_sw/sw.js',
-
-  workbox: {
-    globIgnores: $env.IS_DEV ? void 0 : ['**/node_modules/**/*', '**/_sw/**/*'],
-    navigateFallback: null,
-  },
-
   registerType: 'autoUpdate',
 
   includeAssets: ['app/favicon.ico'],
@@ -59,6 +49,10 @@ export default {
         purpose: 'maskable',
       },
     ],
+  },
+
+  workbox: {
+    navigateFallback: null,
   },
 
   devOptions: {

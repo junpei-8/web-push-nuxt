@@ -2,7 +2,7 @@
 import './styles/global.scss'
 import registerWebPushWorker from './services/register-web-push-worker'
 
-onMounted(() => registerWebPushWorker())
+registerWebPushWorker()
 </script>
 
 <template>
