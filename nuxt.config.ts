@@ -33,7 +33,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   vite: {
-    define: { $env: envConfig },
+    define: {
+      $env: envConfig,
+    },
+    css: {
+      preprocessorOptions: {
+        scss: { additionalData: `@use '~/styles/core' as *;\n` },
+      },
+    },
   },
 
   nitro: {

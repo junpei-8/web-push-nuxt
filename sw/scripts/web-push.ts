@@ -35,23 +35,30 @@ sw.addEventListener('notificationclick', function (event) {
       .then(function (matchedClients) {
         const noticeData: NotificationData = event.notification.data || {}
 
-        const url = noticeData.url || sw.location.origin
+        const url = sw.location.origin + noticeData.url || ''
 
         function focusClient(client: OptionalWindowClient) {
-          if (client && client.focus) return client.focus()
-          return Promise.resolve(null)
+          if (!client || !client.focus) return Promise.resolve(null)
+          return client.focus()
         }
 
         function navigateClient(client: OptionalWindowClient) {
-          if (client && client.navigate) return client.navigate(url)
-          return Promise.resolve(null)
+          if (!client || !client.navigate) return Promise.resolve(null)
+          return client.navigate(url)
+        }
+
+        function requestNavigation(client: WindowClient) {
+          client.postMessage?.({ type: 'notification-click', url })
+          return Promise.resolve(client)
         }
 
         // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
         for (let i = 0; i < matchedClients.length; i++) {
           const client = matchedClients[i]
           if (client.url === url) {
-            return focusClient(client).then(navigateClient)
+            return focusClient(client)
+              .then(navigateClient)
+              .then(() => requestNavigation(client))
           }
         }
 

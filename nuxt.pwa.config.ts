@@ -12,8 +12,8 @@ export default {
   manifest: {
     id: 'web-push-nuxt',
     start_url: '/',
-    name: 'Web Push Nuxt',
-    short_name: 'Web Push Nuxt',
+    name: 'Web Push with Nuxt',
+    short_name: 'Web Push with Nuxt',
     description: 'Web Push with Nuxt',
     display: 'standalone',
     theme_color: '#00dc82',

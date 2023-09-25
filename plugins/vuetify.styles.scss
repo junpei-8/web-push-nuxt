@@ -1,1 +1,5 @@
 @use 'vuetify';
+
+.v-btn.v-btn {
+  text-transform: none;
+}

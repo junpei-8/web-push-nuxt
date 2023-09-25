@@ -1,3 +1,3 @@
 export default defineEventHandler(() => {
-  return { greeting: 'Hello World' }
+  return { data: 'Hello World' }
 })

@@ -1,13 +1,24 @@
-import { WebPushSubscriptionsDeleteRequestBody } from '~/server/api/web-push/subscriptions.delete'
-import { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/subscriptions.post'
+import { appToastStore } from '~/app/stores/toast'
+import type { WebPushSubscriptionsDeleteRequestBody } from '~/server/api/web-push/subscriptions.delete'
+import type { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/subscriptions.post'
 
 const _swCookieName = 'WebPushSubscriptionEndpoint'
 
 let _swRegistration: ServiceWorkerRegistration | null = null
 
+serviceWorker?.addEventListener('message', (event) => {
+  appToastStore.open(
+    'message From Service Worker: ' + JSON.stringify(event.data),
+    { color: 'success' }
+  )
+})
+
 const _gettingSwRegistration = serviceWorker
   ?.register('/sw/web-push.js', { scope: '/sw/' })
-  .then((result) => (_swRegistration = result))
+  .then((registration) => {
+    appToastStore.open('Service Worker を登録しました', { color: 'success' })
+    return (_swRegistration = registration)
+  })
 
 /** Web Push の ServiceWorker を登録する */
 export async function registerWebPushServiceWorker() {
@@ -15,9 +26,21 @@ export async function registerWebPushServiceWorker() {
 
   const registration = _swRegistration || (await _gettingSwRegistration)
 
+  appToastStore.open('Web Push のスクリプトの読み込みが完了しました', {
+    color: 'success',
+  })
+
+  appToastStore.open('Service Worker デバイストークンを発行しています', {
+    color: 'info',
+  })
+
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: $env.VAPID_PUBLIC_KEY,
+  })
+
+  appToastStore.open('Service Worker デバイストークンを登録しました', {
+    color: 'success',
   })
 
   const { endpoint, keys, expirationTime = null } = subscription.toJSON()
@@ -83,7 +106,9 @@ export async function subscribeWebPushWithRequest() {
   const permission = await requestNotificationPermission()
   if (permission !== 'granted') return null
 
-  registerWebPushServiceWorker()
+  appToastStore.open('Web Push に登録しています。', { color: 'info' })
+
+  return registerWebPushServiceWorker()
 }
 
 export function subscribeWebPush() {
@@ -92,11 +117,5 @@ export function subscribeWebPush() {
   const permission = Notification.permission
   if (permission !== 'granted') return null
 
-  registerWebPushServiceWorker()
-}
-
-export function sendWebPush() {
-  fetch(`/api/web-push/notifications`, { method: 'POST' }).catch((error) =>
-    console.error(error)
-  )
+  return registerWebPushServiceWorker()
 }
