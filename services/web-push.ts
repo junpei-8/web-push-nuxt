@@ -11,7 +11,7 @@ const _gettingSwRegistration = serviceWorker
   .then((registration) => {
     appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
-    serviceWorker?.addEventListener('message', (event) => {
+    serviceWorker.addEventListener('message', (event) => {
       appToastStore.open(
         'message From Service Worker: ' + JSON.stringify(event.data),
         { color: 'success' }
