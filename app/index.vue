@@ -58,7 +58,7 @@ async function sendWebPushNotification(event: Event) {
 
       <VDivider />
 
-      <VForm @submit="sendWebPushNotification">
+      <form class="form" @submit="sendWebPushNotification">
         <VTextField
           v-model="webPushNotificationPostRequestBodyStates.title"
           prefix="Title"
@@ -89,7 +89,7 @@ async function sendWebPushNotification(event: Event) {
         >
           Send Notification
         </VBtn>
-      </VForm>
+      </form>
     </div>
   </main>
 
@@ -131,7 +131,7 @@ async function sendWebPushNotification(event: Event) {
     margin: 16px 0;
   }
 
-  .v-form {
+  .form {
     width: 100%;
   }
 

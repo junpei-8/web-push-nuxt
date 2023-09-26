@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    presets: [{ from: 'vuetify', imports: [''] }],
+    imports: [{ typeFrom: 'vuetify' }],
   },
 
   build: {

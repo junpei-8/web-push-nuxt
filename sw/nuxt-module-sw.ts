@@ -11,15 +11,16 @@ import {
   MinifyOptions as TerserMinifyOptions,
 } from 'terser'
 
-export interface nuxtSwModuleOptions extends TerserMinifyOptions {
+export interface NuxtSwModuleOptions {
   inputDir?: string
   outputDir?: string
   tsConfig?: string | TypescriptCompilerOptions
+  terserOptions?: TerserMinifyOptions
 }
 
 async function readTsConfig(
   inputPath: string,
-  tsConfig: nuxtSwModuleOptions['tsConfig']
+  tsConfig: NuxtSwModuleOptions['tsConfig']
 ) {
   if (typeof tsConfig === 'object') return tsConfig
 
@@ -61,7 +62,7 @@ async function getAllFilePaths(
 async function transpileFile(
   { input: inputPath, output: outputPath }: FilePath,
   tsConfig: TypescriptCompilerOptions,
-  terserOptions: TerserMinifyOptions
+  terserOptions: TerserMinifyOptions = {}
 ): Promise<void> {
   try {
     const fileContent = await readFile(inputPath, 'utf8')
@@ -86,12 +87,12 @@ async function transpileFile(
   }
 }
 
-async function transpile(options: nuxtSwModuleOptions, changedPath?: string) {
+async function transpile(options: NuxtSwModuleOptions, changedPath?: string) {
   const {
     inputDir = './sw',
     outputDir = inputDir + '/dist',
     tsConfig: tsConfigOption,
-    ...terserOptions
+    terserOptions,
   } = options
 
   if (changedPath) {
@@ -110,7 +111,7 @@ async function transpile(options: nuxtSwModuleOptions, changedPath?: string) {
   await Promise.all(filePaths.map(transpile))
 }
 
-export default function nuxtSwModule(options: nuxtSwModuleOptions = {}) {
+export default function nuxtSwModule(options: NuxtSwModuleOptions = {}) {
   return <NuxtModule>(async (_, nuxt) => {
     nuxt.hooks.hook('build:before', () => transpile(options))
     nuxt.hooks.hook('builder:watch', (_, path) => transpile(options, path))
