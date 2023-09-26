@@ -6,13 +6,6 @@ const _swCookieName = 'WebPushSubscriptionEndpoint'
 
 let _swRegistration: ServiceWorkerRegistration | null = null
 
-serviceWorker?.addEventListener('message', (event) => {
-  appToastStore.open(
-    'message From Service Worker: ' + JSON.stringify(event.data),
-    { color: 'success' }
-  )
-})
-
 const _gettingSwRegistration = serviceWorker
   ?.register('/sw/web-push.js', { scope: '/sw/' })
   .then((registration) => {

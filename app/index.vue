@@ -32,10 +32,12 @@ async function sendWebPushNotification(event: Event) {
   if (isSendingWebPushNotification.value) return
   isSendingWebPushNotification.value = true
 
-  const result = await useLazyFetch('/api/web-push/notifications', {
+  const result = await useFetch('/api/web-push/notifications', {
     method: 'POST',
     body: { ...webPushNotificationPostRequestBodyStates.value },
   })
+
+  console.log('result: ', result)
 
   result.error
     ? appToastStore.open('Web Push Notification の送信に失敗しました', {
