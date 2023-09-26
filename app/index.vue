@@ -39,7 +39,7 @@ async function sendWebPushNotification(event: Event) {
 
   console.log('result: ', result)
 
-  result.error
+  result.error.value
     ? appToastStore.open('Web Push Notification の送信に失敗しました', {
         color: 'error',
       })
