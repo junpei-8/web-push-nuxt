@@ -46,7 +46,10 @@ sw.addEventListener('notificationclick', function (event) {
       }
 
       function requestNavigation(client: WindowClient, message?: string) {
-        client.postMessage?.({ type: 'notification-click', url, message })
+        setTimeout(() => {
+          client.postMessage?.({ type: 'notification-click', url, message })
+          Promise.resolve(client)
+        }, 2000)
         return Promise.resolve(client)
       }
 
