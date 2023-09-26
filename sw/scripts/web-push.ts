@@ -47,11 +47,18 @@ sw.addEventListener('notificationclick', function (event) {
           return client.navigate(url)
         }
 
+        function requestNavigation(client: WindowClient) {
+          client.postMessage?.({ type: 'notification-click', url })
+          return Promise.resolve(client)
+        }
+
         // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
         for (let i = 0; i < matchedClients.length; i++) {
           const client = matchedClients[i]
           if (client.url === url) {
-            return focusClient(client).then(navigateClient)
+            return focusClient(client)
+              .then(navigateClient)
+              .then(() => requestNavigation(client))
           }
         }
 
