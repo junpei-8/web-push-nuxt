@@ -30,39 +30,37 @@ sw.addEventListener('notificationclick', function (event) {
   const clients = sw.clients
 
   event.waitUntil(
-    clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
-      .then(function (matchedClients) {
-        const noticeData: NotificationData = event.notification.data || {}
+    clients.matchAll({ type: 'window' }).then(function (matchedClients) {
+      const noticeData: NotificationData = event.notification.data || {}
 
-        const url = sw.location.origin + noticeData.url || ''
+      const url = sw.location.origin + noticeData.url || ''
 
-        function focusClient(client: OptionalWindowClient) {
-          if (!client || !client.focus) return Promise.resolve(null)
-          return client.focus()
+      function focusClient(client: OptionalWindowClient) {
+        if (!client || !client.focus) return Promise.resolve(null)
+        return client.focus()
+      }
+
+      function navigateClient(client: OptionalWindowClient) {
+        if (!client || !client.navigate) return Promise.resolve(null)
+        return client.navigate(url)
+      }
+
+      function requestNavigation(client: WindowClient) {
+        client.postMessage?.({ type: 'notification-click', url })
+        return Promise.resolve(client)
+      }
+
+      // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
+      for (let i = 0; i < matchedClients.length; i++) {
+        const client = matchedClients[i]
+        if (client.url === url) {
+          return focusClient(client)
+            .then(navigateClient)
+            .then(() => requestNavigation(client))
         }
+      }
 
-        function navigateClient(client: OptionalWindowClient) {
-          if (!client || !client.navigate) return Promise.resolve(null)
-          return client.navigate(url)
-        }
-
-        function requestNavigation(client: WindowClient) {
-          client.postMessage?.({ type: 'notification-click', url })
-          return Promise.resolve(client)
-        }
-
-        // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
-        for (let i = 0; i < matchedClients.length; i++) {
-          const client = matchedClients[i]
-          if (client.url === url) {
-            return focusClient(client)
-              .then(navigateClient)
-              .then(() => requestNavigation(client))
-          }
-        }
-
-        return clients.openWindow(url).then(focusClient)
-      })
+      return clients.openWindow(url).then(focusClient)
+    })
   )
 })
