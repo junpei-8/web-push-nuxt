@@ -45,8 +45,8 @@ sw.addEventListener('notificationclick', function (event) {
         return client.navigate(url)
       }
 
-      function requestNavigation(client: WindowClient) {
-        client.postMessage?.({ type: 'notification-click', url })
+      function requestNavigation(client: WindowClient, message?: string) {
+        client.postMessage?.({ type: 'notification-click', url, message })
         return Promise.resolve(client)
       }
 
@@ -54,13 +54,29 @@ sw.addEventListener('notificationclick', function (event) {
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
         if (client.url === url) {
+          try {
+            requestNavigation(client, 'searched client')
+          } catch {}
+
           return focusClient(client)
             .then(navigateClient)
             .then(() => requestNavigation(client))
         }
       }
 
-      return clients.openWindow(url).then(focusClient)
+      return clients
+        .openWindow(url)
+        .then((client) => {
+          if (!client) return null
+
+          try {
+            requestNavigation(client, 'searched client')
+          } catch {}
+
+          return client
+        })
+
+        .then(focusClient)
     })
   )
 })
