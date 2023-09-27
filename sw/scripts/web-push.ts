@@ -12,6 +12,8 @@ type OptionalWindowClient = Partial<WindowClient> | null | undefined
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
+console.log('load sw')
+
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
   if (!payload) return
@@ -70,8 +72,16 @@ sw.addEventListener('notificationclick', function (event) {
 
 sw.addEventListener('message', (event) => {
   console.log('message From Service Worker: ' + JSON.stringify(event.data))
+
   postMessage({ type: 'message', data: event.data, url: targetUrl })
+
   targetClient?.postMessage?.({
+    type: 'message',
+    data: event.data,
+    url: targetUrl,
+  })
+
+  event.source?.postMessage({
     type: 'message',
     data: event.data,
     url: targetUrl,
