@@ -35,6 +35,7 @@ sw.addEventListener('notificationclick', function (event) {
     clients
       .matchAll({ type: 'window', includeUncontrolled: true })
       .then(function (matchedClients) {
+        const matchedClientLength = matchedClients.length
         const noticeData: NotificationData = event.notification.data || {}
 
         const originUrl = sw.location.origin
@@ -47,18 +48,22 @@ sw.addEventListener('notificationclick', function (event) {
           console.log('originUrl: ', originUrl)
         }, 2000)
 
-        // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
-        for (let i = 0; i < matchedClients.length; i++) {
-          const client = matchedClients[i]
-          setTimeout(() => console.log('client: : ', client), 2000)
-          if (client.url === url) {
-            targetClientUrl = client.url
-            return client.focus ? client.focus() : Promise.resolve(null)
-          }
+        function focusClient(client: WindowClient) {
+          if (!client.focus) return Promise.resolve(null)
+          targetUrl = url
+          return client.focus()
         }
 
-        setTimeout(() => console.log('openWindow: ', targetClientUrl), 2000)
-        return clients.openWindow(url)
+        if (!matchedClientLength) return clients.openWindow(url)
+
+        for (let i = 0; i < matchedClientLength; i++) {
+          const client = matchedClients[i]
+          setTimeout(() => console.log('client: : ', client), 2000)
+          if (client.url === url) focusClient(client)
+        }
+
+        // matchedClients は Service Worker と同一の origin であることが保証されている
+        return focusClient(matchedClients[0])
       })
   )
 })
