@@ -73,8 +73,6 @@ sw.addEventListener('notificationclick', function (event) {
 sw.addEventListener('message', (event) => {
   console.log('message From Service Worker: ' + JSON.stringify(event.data))
 
-  postMessage({ type: 'message', data: event.data, url: targetUrl })
-
   targetClient?.postMessage?.({
     type: 'message',
     data: event.data,
