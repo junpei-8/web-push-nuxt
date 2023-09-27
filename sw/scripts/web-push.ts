@@ -40,7 +40,7 @@ sw.addEventListener('notificationclick', function (event) {
       // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
-        if (client.focus && client.url.startsWith(originUrl)) {
+        if (client.focus && client.url === url) {
           targetClientUrl = client.url
           return client.focus()
         }
