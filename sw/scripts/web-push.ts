@@ -38,19 +38,22 @@ sw.addEventListener('notificationclick', function (event) {
       const originUrl = sw.location.origin
       const url = originUrl + noticeData.url || ''
 
-      console.log('url: ', url)
-      console.log('originUrl: ', originUrl)
+      setTimeout(() => {
+        console.log('url: ', url)
+        console.log('originUrl: ', originUrl)
+      }, 2000)
 
       // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
-        console.log('client: ', client)
-        if (client.focus && client.url === url) {
+        setTimeout(() => console.log('client: : ', client), 2000)
+        if (client.url === url) {
           targetClientUrl = client.url
-          return client.focus()
+          return client.focus ? client.focus() : Promise.resolve(null)
         }
       }
 
+      setTimeout(() => console.log('openWindow: ', targetClientUrl), 2000)
       return clients.openWindow(url)
     })
   )
