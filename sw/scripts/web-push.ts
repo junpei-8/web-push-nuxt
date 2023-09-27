@@ -8,11 +8,7 @@ interface NotificationData {
   url: string
 }
 
-type OptionalWindowClient = Partial<WindowClient> | null | undefined
-
 const sw = self as unknown as ServiceWorkerGlobalScope
-
-console.log('load sw')
 
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
@@ -26,6 +22,7 @@ sw.addEventListener('push', function (event) {
 })
 
 let targetUrl = ''
+let targetClientUrl: string = ''
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -44,6 +41,7 @@ sw.addEventListener('notificationclick', function (event) {
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
         if (client.focus && client.url.startsWith(originUrl)) {
+          targetClientUrl = client.url
           return client.focus()
         }
       }
@@ -57,9 +55,10 @@ sw.addEventListener('message', (event) => {
   const source = event.source
 
   if (source && targetUrl) {
-    event.source?.postMessage({
+    source.postMessage({
       type: 'navigation',
       url: targetUrl,
+      targetClientUrl,
     })
 
     targetUrl = ''
