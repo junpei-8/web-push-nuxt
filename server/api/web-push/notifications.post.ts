@@ -28,9 +28,7 @@ export default defineEventHandler(async (event) => {
 
           WEB_PUSH_OPTIONS
         )
-        .catch((error) => {
-          error
-        })
+        .catch((error) => error)
     )
   )
 
