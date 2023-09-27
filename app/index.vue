@@ -10,7 +10,7 @@ import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
 // 起動時に Web Push に登録する
-subscribeWebPush()?.catch(() =>
+subscribeWebPushWithRequest()?.catch(() =>
   appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
 )
 

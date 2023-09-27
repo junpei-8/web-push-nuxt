@@ -103,7 +103,7 @@ export async function registerWebPushServiceWorker() {
 }
 
 export async function subscribeWebPushWithRequest() {
-  if (!IS_CLIENT) return null
+  if (!IS_SUPPORTED_NOTIFICATION) return null
 
   const permission = await requestNotificationPermission()
   if (permission !== 'granted') return null
@@ -114,7 +114,7 @@ export async function subscribeWebPushWithRequest() {
 }
 
 export function subscribeWebPush() {
-  if (!IS_CLIENT) return null
+  if (!IS_SUPPORTED_NOTIFICATION) return null
 
   const permission = Notification.permission
   if (permission !== 'granted') return null
