@@ -38,9 +38,13 @@ sw.addEventListener('notificationclick', function (event) {
       const originUrl = sw.location.origin
       const url = originUrl + noticeData.url || ''
 
+      console.log('url: ', url)
+      console.log('originUrl: ', originUrl)
+
       // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
+        console.log('client: ', client)
         if (client.focus && client.url === url) {
           targetClientUrl = client.url
           return client.focus()
@@ -54,6 +58,7 @@ sw.addEventListener('notificationclick', function (event) {
 
 sw.addEventListener('message', (event) => {
   const source = event.source
+  console.log('on message, target url: ', targetUrl)
 
   if (source && targetUrl) {
     source.postMessage({
