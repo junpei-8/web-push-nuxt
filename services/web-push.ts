@@ -9,12 +9,8 @@ let _swRegistration: ServiceWorkerRegistration | null = null
 serviceWorker?.addEventListener('message', (event) => {
   const data = event.data
 
-  appToastStore.open('message From Service Worker: ' + JSON.stringify(data), {
-    color: 'success',
-  })
-
   if (data.type === 'navigation' && data.pathname) {
-    appToastStore.open('Redirecting to ' + data.pathname)
+    appToastStore.open('Redirect: ' + data.pathname, { color: 'info' })
     useRouter().push(data.pathname)
   }
 })
@@ -23,12 +19,6 @@ const _gettingSwRegistration = serviceWorker
   ?.register('/sw/web-push.js', { scope: '/sw/' })
   .then((registration) => {
     appToastStore.open('Service Worker を登録しました', { color: 'success' })
-
-    // registration.active?.postMessage({
-    //   type: 'message',
-    //   data: 'Hello from client on no wait ready',
-    // })
-
     return (_swRegistration = registration)
   })
 
