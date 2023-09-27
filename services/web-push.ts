@@ -17,7 +17,10 @@ const _gettingSwRegistration = serviceWorker
   ?.register('/sw/web-push.js', { scope: '/sw/' })
   .then((registration) => {
     appToastStore.open('Service Worker を登録しました', { color: 'success' })
-
+    registration.active?.postMessage({
+      type: 'message',
+      data: 'Hello from client',
+    })
     return (_swRegistration = registration)
   })
 

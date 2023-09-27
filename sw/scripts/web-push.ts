@@ -23,6 +23,8 @@ sw.addEventListener('push', function (event) {
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
+let lastUrl = ''
+
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
 
@@ -33,7 +35,7 @@ sw.addEventListener('notificationclick', function (event) {
     clients.matchAll({ type: 'window' }).then(function (matchedClients) {
       const noticeData: NotificationData = event.notification.data || {}
 
-      const url = sw.location.origin + noticeData.url || ''
+      const url = (lastUrl = sw.location.origin + noticeData.url || '')
 
       function focusClient(client: OptionalWindowClient) {
         if (!client || !client.focus) return Promise.resolve(null)
@@ -45,11 +47,8 @@ sw.addEventListener('notificationclick', function (event) {
         return client.navigate(url)
       }
 
-      function requestNavigation(client: WindowClient, message?: string) {
-        setTimeout(() => {
-          client.postMessage?.({ type: 'notification-click', url, message })
-          Promise.resolve(client)
-        }, 2000)
+      function requestNavigation(client: WindowClient) {
+        client.postMessage?.({ type: 'notification-click', url })
         return Promise.resolve(client)
       }
 
@@ -57,29 +56,18 @@ sw.addEventListener('notificationclick', function (event) {
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
         if (client.url === url) {
-          try {
-            requestNavigation(client, 'searched client')
-          } catch {}
-
           return focusClient(client)
             .then(navigateClient)
             .then(() => requestNavigation(client))
         }
       }
 
-      return clients
-        .openWindow(url)
-        .then((client) => {
-          if (!client) return null
-
-          try {
-            requestNavigation(client, 'searched client')
-          } catch {}
-
-          return client
-        })
-
-        .then(focusClient)
+      return clients.openWindow(url).then(focusClient)
     })
   )
+})
+
+sw.addEventListener('message', (event) => {
+  console.log('message From Service Worker: ' + JSON.stringify(event.data))
+  postMessage({ type: 'message', data: event.data, url: lastUrl })
 })
