@@ -23,6 +23,8 @@ const _gettingSwRegistration = serviceWorker
     console.log('active: ', active)
 
     serviceWorker.ready.then((allRegistration) => {
+      console.log('送信！')
+
       registration.active?.postMessage({
         type: 'message',
         data: 'Hello from client',

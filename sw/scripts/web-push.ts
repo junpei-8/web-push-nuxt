@@ -23,7 +23,8 @@ sw.addEventListener('push', function (event) {
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
-let lastUrl = ''
+let targetClient: OptionalWindowClient = null
+let targetUrl: string = ''
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -35,7 +36,7 @@ sw.addEventListener('notificationclick', function (event) {
     clients.matchAll({ type: 'window' }).then(function (matchedClients) {
       const noticeData: NotificationData = event.notification.data || {}
 
-      const url = (lastUrl = sw.location.origin + noticeData.url || '')
+      const url = (targetUrl = sw.location.origin + noticeData.url || '')
 
       function focusClient(client: OptionalWindowClient) {
         if (!client || !client.focus) return Promise.resolve(null)
@@ -69,5 +70,10 @@ sw.addEventListener('notificationclick', function (event) {
 
 sw.addEventListener('message', (event) => {
   console.log('message From Service Worker: ' + JSON.stringify(event.data))
-  postMessage({ type: 'message', data: event.data, url: lastUrl })
+  postMessage({ type: 'message', data: event.data, url: targetUrl })
+  targetClient?.postMessage?.({
+    type: 'message',
+    data: event.data,
+    url: targetUrl,
+  })
 })
