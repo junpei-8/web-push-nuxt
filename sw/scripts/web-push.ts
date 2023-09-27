@@ -26,9 +26,6 @@ sw.addEventListener('push', function (event) {
 })
 
 let targetUrl = ''
-let targetOriginUrl = ''
-let targetClientUrl = ''
-let targetMessage: any = null
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -40,41 +37,18 @@ sw.addEventListener('notificationclick', function (event) {
     clients.matchAll({ type: 'window' }).then(function (matchedClients) {
       const noticeData: NotificationData = event.notification.data || {}
 
-      const originUrl = (targetOriginUrl = sw.location.origin)
-      const url = (targetUrl = originUrl + noticeData.url || '')
-
-      function focusClient(client: OptionalWindowClient) {
-        if (!client || !client.focus) return Promise.resolve(null)
-        return client.focus()
-      }
-
-      function navigateClient(client: OptionalWindowClient) {
-        if (!client || !client.navigate) return Promise.resolve(null)
-        return client.navigate(url)
-      }
-
-      function requestNavigation(client: WindowClient) {
-        client.postMessage?.({ type: 'notification-click', url })
-        return Promise.resolve(client)
-      }
+      const originUrl = sw.location.origin
+      const url = originUrl + noticeData.url || ''
 
       // 既に開いているタブがあれば、そちらをフォーカスして、URLを更新する
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
-        if (client.url === url) {
-          targetMessage = 'type: focusClient'
-          targetClientUrl = client.url
-          return focusClient(client)
-            .then(navigateClient)
-            .then(() => requestNavigation(client))
+        if (client.focus && client.url.startsWith(originUrl)) {
+          return client.focus()
         }
       }
 
-      return clients.openWindow(url).then((client) => {
-        targetMessage = 'type: openWindow'
-        targetClientUrl = client?.url || ''
-        return client
-      })
+      return clients.openWindow(url)
     })
   )
 })
@@ -84,17 +58,10 @@ sw.addEventListener('message', (event) => {
 
   if (source && targetUrl) {
     event.source?.postMessage({
-      type: 'message',
-      data: event.data,
-      message: targetMessage,
+      type: 'navigation',
       url: targetUrl,
-      clientUrl: targetClientUrl,
-      originUrl: targetOriginUrl,
     })
 
-    targetMessage = ''
     targetUrl = ''
-    targetClientUrl = ''
-    targetOriginUrl = ''
   }
 })

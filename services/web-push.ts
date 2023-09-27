@@ -7,7 +7,12 @@ const _swCookieName = 'WebPushSubscriptionEndpoint'
 let _swRegistration: ServiceWorkerRegistration | null = null
 
 serviceWorker?.addEventListener('message', (event) => {
-  console.log('message from service worker', event.data)
+  const data = event.data
+
+  if (data.type === 'navigation' && data.url) {
+    appToastStore.open('Redirecting to ' + data.url)
+    useRouter().push(data.url)
+  }
 
   appToastStore.open(
     'message From Service Worker: ' + JSON.stringify(event.data),

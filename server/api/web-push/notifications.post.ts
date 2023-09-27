@@ -14,21 +14,25 @@ export default defineEventHandler(async (event) => {
     readBody(event),
   ])
 
-  await Promise.all(
+  const results = await Promise.all(
     webPushSubscriptions.map(async ({ endpoint, authKey, p256dhKey }) =>
-      webPush.sendNotification(
-        { endpoint, keys: { auth: authKey, p256dh: p256dhKey } },
+      webPush
+        .sendNotification(
+          { endpoint, keys: { auth: authKey, p256dh: p256dhKey } },
 
-        JSON.stringify({
-          title: body.title,
-          body: body.content,
-          url: body.url,
-        }),
+          JSON.stringify({
+            title: body.title,
+            body: body.content,
+            url: body.url,
+          }),
 
-        WEB_PUSH_OPTIONS
-      )
+          WEB_PUSH_OPTIONS
+        )
+        .catch((error) => {
+          error
+        })
     )
   )
 
-  return true
+  return results
 })
