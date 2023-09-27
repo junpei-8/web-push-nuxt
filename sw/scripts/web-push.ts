@@ -75,12 +75,14 @@ sw.addEventListener('message', (event) => {
 
   targetClient?.postMessage?.({
     type: 'message',
+    message: 'message by target client',
     data: event.data,
     url: targetUrl,
   })
 
   event.source?.postMessage({
     type: 'message',
+    message: 'message by source',
     data: event.data,
     url: targetUrl,
   })
