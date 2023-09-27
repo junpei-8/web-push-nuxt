@@ -5,17 +5,19 @@ const toasts = appToastStore.elements
 </script>
 
 <template>
-  <template v-for="toast in toasts" :key="toast.id">
-    <VSnackbar v-bind="toast.props">
-      <span class="message">
-        {{ toast.message }}
-      </span>
+  <ClientOnly>
+    <template v-for="toast in toasts" :key="toast.id">
+      <VSnackbar v-bind="toast.props">
+        <span class="message">
+          {{ toast.message }}
+        </span>
 
-      <template #actions>
-        <VBtn size="32" icon="$close" @click="toast.close" class="button" />
-      </template>
-    </VSnackbar>
-  </template>
+        <template #actions>
+          <VBtn size="32" icon="$close" @click="toast.close" class="button" />
+        </template>
+      </VSnackbar>
+    </template>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>
