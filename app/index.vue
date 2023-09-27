@@ -10,9 +10,11 @@ import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
 // 起動時に Web Push に登録する
-subscribeWebPushWithRequest()?.catch(() =>
-  appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
-)
+onMounted(() => {
+  subscribeWebPushWithRequest()?.catch(() =>
+    appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
+  )
+})
 
 // Web Push Notification を送信する際のカスタムプロップス
 const webPushNotificationPostRequestBodyStates =
