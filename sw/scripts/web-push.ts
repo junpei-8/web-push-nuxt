@@ -22,8 +22,6 @@ sw.addEventListener('push', function (event) {
 })
 
 let targetUrl = ''
-let targetClientUrl = ''
-let targetOriginUrl = ''
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -41,16 +39,12 @@ sw.addEventListener('notificationclick', function (event) {
         const originUrl = sw.location.origin
         const url = originUrl + noticeData.url || ''
 
-        console.log('matchedClients', matchedClients)
-        setTimeout(() => {
-          console.log('matchedClients', matchedClients)
-          console.log('url: ', url)
-          console.log('originUrl: ', originUrl)
-        }, 2000)
-
         function focusClient(client: WindowClient) {
           if (!client.focus) return Promise.resolve(null)
           targetUrl = url
+          client.postMessage({ type: 'navigation', url: url })
+          console.log('client1: ', client)
+          setTimeout(() => console.log('client2: ', client), 2000)
           return client.focus()
         }
 
@@ -58,7 +52,7 @@ sw.addEventListener('notificationclick', function (event) {
 
         for (let i = 0; i < matchedClientLength; i++) {
           const client = matchedClients[i]
-          setTimeout(() => console.log('client: : ', client), 2000)
+          setTimeout(() => console.log('client: ', client), 2000)
           if (client.url === url) focusClient(client)
         }
 
@@ -76,12 +70,8 @@ sw.addEventListener('message', (event) => {
     source.postMessage({
       type: 'navigation',
       url: targetUrl,
-      targetClientUrl,
-      targetOriginUrl,
     })
 
     targetUrl = ''
-    targetClientUrl = ''
-    targetOriginUrl = ''
   }
 })

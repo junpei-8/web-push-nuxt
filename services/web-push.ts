@@ -24,10 +24,10 @@ const _gettingSwRegistration = serviceWorker
   .then((registration) => {
     appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
-    registration.active?.postMessage({
-      type: 'message',
-      data: 'Hello from client on no wait ready',
-    })
+    // registration.active?.postMessage({
+    //   type: 'message',
+    //   data: 'Hello from client on no wait ready',
+    // })
 
     return (_swRegistration = registration)
   })
