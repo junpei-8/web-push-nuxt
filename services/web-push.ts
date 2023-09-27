@@ -9,15 +9,14 @@ let _swRegistration: ServiceWorkerRegistration | null = null
 serviceWorker?.addEventListener('message', (event) => {
   const data = event.data
 
+  appToastStore.open('message From Service Worker: ' + JSON.stringify(data), {
+    color: 'success',
+  })
+
   if (data.type === 'navigation' && data.url) {
     appToastStore.open('Redirecting to ' + data.url)
     useRouter().push(data.url)
   }
-
-  appToastStore.open(
-    'message From Service Worker: ' + JSON.stringify(event.data),
-    { color: 'success' }
-  )
 })
 
 const _gettingSwRegistration = serviceWorker

@@ -22,7 +22,8 @@ sw.addEventListener('push', function (event) {
 })
 
 let targetUrl = ''
-let targetClientUrl: string = ''
+let targetClientUrl = ''
+let targetOriginUrl = ''
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -59,8 +60,11 @@ sw.addEventListener('message', (event) => {
       type: 'navigation',
       url: targetUrl,
       targetClientUrl,
+      targetOriginUrl,
     })
 
     targetUrl = ''
+    targetClientUrl = ''
+    targetOriginUrl = ''
   }
 })
