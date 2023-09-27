@@ -25,7 +25,9 @@ sw.addEventListener('push', function (event) {
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
-let targetUrl: string = ''
+let targetUrl = ''
+let targetOriginUrl = ''
+let targetClientUrl = ''
 let targetMessage: any = null
 
 sw.addEventListener('notificationclick', function (event) {
@@ -38,7 +40,8 @@ sw.addEventListener('notificationclick', function (event) {
     clients.matchAll({ type: 'window' }).then(function (matchedClients) {
       const noticeData: NotificationData = event.notification.data || {}
 
-      const url = (targetUrl = sw.location.origin + noticeData.url || '')
+      const originUrl = (targetOriginUrl = sw.location.origin)
+      const url = (targetUrl = originUrl + noticeData.url || '')
 
       function focusClient(client: OptionalWindowClient) {
         if (!client || !client.focus) return Promise.resolve(null)
@@ -60,14 +63,18 @@ sw.addEventListener('notificationclick', function (event) {
         const client = matchedClients[i]
         if (client.url === url) {
           targetMessage = 'type: focusClient'
+          targetClientUrl = client.url
           return focusClient(client)
             .then(navigateClient)
             .then(() => requestNavigation(client))
         }
       }
 
-      targetMessage = 'type: openWindow'
-      return clients.openWindow(url).then(focusClient)
+      return clients.openWindow(url).then((client) => {
+        targetMessage = 'type: openWindow'
+        targetClientUrl = client?.url || ''
+        return client
+      })
     })
   )
 })
@@ -78,12 +85,16 @@ sw.addEventListener('message', (event) => {
   if (source && targetUrl) {
     event.source?.postMessage({
       type: 'message',
-      message: targetMessage,
       data: event.data,
+      message: targetMessage,
       url: targetUrl,
+      clientUrl: targetClientUrl,
+      originUrl: targetOriginUrl,
     })
 
     targetMessage = ''
     targetUrl = ''
+    targetClientUrl = ''
+    targetOriginUrl = ''
   }
 })
