@@ -19,7 +19,7 @@ const webPushNotificationPostRequestBodyStates =
   ref<WebPushNotificationsPostRequestBody>({
     title: '',
     content: '',
-    url: '',
+    pathname: '',
   })
 
 /** Web Push Notification を送信しているかどうか */
@@ -32,7 +32,7 @@ async function sendWebPushNotification(event: Event) {
   if (isSendingWebPushNotification.value) return
   isSendingWebPushNotification.value = true
 
-  const result = await useFetch('/api/web-push/notifications', {
+  const result = await useLazyFetch('/api/web-push/notifications', {
     method: 'POST',
     body: { ...webPushNotificationPostRequestBodyStates.value },
   })
@@ -78,9 +78,9 @@ async function sendWebPushNotification(event: Event) {
         />
 
         <VSelect
-          v-memo="[webPushNotificationPostRequestBodyStates.url]"
-          v-model="webPushNotificationPostRequestBodyStates.url"
-          prefix="URL"
+          v-memo="[webPushNotificationPostRequestBodyStates.pathname]"
+          v-model="webPushNotificationPostRequestBodyStates.pathname"
+          prefix="Pathname"
           variant="underlined"
           hide-details
           :items="['/', '/hello']"

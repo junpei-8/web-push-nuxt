@@ -1,11 +1,12 @@
 import webPush from 'web-push'
 import { db, webPushSubscriptionsTable } from '~/database'
 import { WEB_PUSH_OPTIONS } from './_/options'
+import { eq } from 'drizzle-orm'
 
 export interface WebPushNotificationsPostRequestBody {
   title?: string
   content?: string
-  url?: string
+  pathname?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -15,20 +16,33 @@ export default defineEventHandler(async (event) => {
   ])
 
   const results = await Promise.all(
-    webPushSubscriptions.map(async ({ endpoint, authKey, p256dhKey }) =>
+    webPushSubscriptions.map(({ endpoint, authKey, p256dhKey }) =>
       webPush
         .sendNotification(
-          { endpoint, keys: { auth: authKey, p256dh: p256dhKey } },
+          {
+            endpoint,
+            keys: {
+              auth: authKey,
+              p256dh: p256dhKey,
+            },
+          },
 
           JSON.stringify({
             title: body.title,
-            body: body.content,
-            url: body.url,
+            content: body.content,
+            pathname: body.pathname,
           }),
 
           WEB_PUSH_OPTIONS
         )
-        .catch((error) => error)
+        .catch(async (error) =>
+          error.statusCode === 410
+            ? await db
+                .delete(webPushSubscriptionsTable)
+                .where(eq(webPushSubscriptionsTable.endpoint, endpoint))
+                .catch(() => null)
+            : error
+        )
     )
   )
 

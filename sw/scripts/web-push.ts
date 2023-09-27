@@ -5,7 +5,7 @@
 //
 
 interface NotificationData {
-  url: string
+  pathname: string
 }
 
 const sw = self as unknown as ServiceWorkerGlobalScope
@@ -14,14 +14,12 @@ sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
   if (!payload) return
 
-  const { title, body, icon, url } = payload
+  const { title, content: body, icon, pathname } = payload
 
-  const data: NotificationData = { url }
+  const data: NotificationData = { pathname }
 
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
-
-let targetUrl = ''
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -36,15 +34,13 @@ sw.addEventListener('notificationclick', function (event) {
         const matchedClientLength = matchedClients.length
         const noticeData: NotificationData = event.notification.data || {}
 
+        const pathname = noticeData.pathname || ''
         const originUrl = sw.location.origin
-        const url = originUrl + noticeData.url || ''
+        const url = originUrl + pathname
 
         function focusClient(client: WindowClient) {
           if (!client.focus) return Promise.resolve(null)
-          targetUrl = url
-          client.postMessage({ type: 'navigation', url: url })
-          console.log('client1: ', client)
-          setTimeout(() => console.log('client2: ', client), 2000)
+          client.postMessage({ type: 'navigation', pathname })
           return client.focus()
         }
 
@@ -52,7 +48,6 @@ sw.addEventListener('notificationclick', function (event) {
 
         for (let i = 0; i < matchedClientLength; i++) {
           const client = matchedClients[i]
-          setTimeout(() => console.log('client: ', client), 2000)
           if (client.url === url) focusClient(client)
         }
 
@@ -60,18 +55,4 @@ sw.addEventListener('notificationclick', function (event) {
         return focusClient(matchedClients[0])
       })
   )
-})
-
-sw.addEventListener('message', (event) => {
-  const source = event.source
-  console.log('on message, target url: ', targetUrl)
-
-  if (source && targetUrl) {
-    source.postMessage({
-      type: 'navigation',
-      url: targetUrl,
-    })
-
-    targetUrl = ''
-  }
 })

@@ -13,9 +13,9 @@ serviceWorker?.addEventListener('message', (event) => {
     color: 'success',
   })
 
-  if (data.type === 'navigation' && data.url) {
-    appToastStore.open('Redirecting to ' + data.url)
-    useRouter().push(data.url)
+  if (data.type === 'navigation' && data.pathname) {
+    appToastStore.open('Redirecting to ' + data.pathname)
+    useRouter().push(data.pathname)
   }
 })
 
