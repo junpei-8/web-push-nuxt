@@ -59,11 +59,12 @@ export async function registerWebPushServiceWorker() {
       endpoint,
     }
 
-    fetch(`/api/web-push/subscriptions`, {
+    const { error } = await useLazyFetch(`/api/web-push/subscriptions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscriptionsDeleteRequest),
-    }).catch((error) => console.error(error))
+      body: subscriptionsDeleteRequest,
+    })
+
+    if (error.value) console.log(error.value)
 
     deleteCookie(_swCookieName)
   }
@@ -85,21 +86,19 @@ export async function registerWebPushServiceWorker() {
     p256dhKey: keys.p256dh!,
   }
 
-  try {
-    await fetch(`/api/web-push/subscriptions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscriptionsPostRequest),
-    })
+  const { error } = await useLazyFetch(`/api/web-push/subscriptions`, {
+    method: 'POST',
+    body: subscriptionsPostRequest,
+  })
 
-    return true
-
+  if (error.value) {
     // ↓ エラー時は Cookie を削除する
-  } catch (error) {
     deleteCookie(_swCookieName)
-    console.error(error)
+    console.error(error.value)
     return false
   }
+
+  return true
 }
 
 export async function subscribeWebPushWithRequest() {
