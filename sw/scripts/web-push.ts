@@ -25,8 +25,8 @@ sw.addEventListener('push', function (event) {
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
-let targetClient: OptionalWindowClient = null
 let targetUrl: string = ''
+let targetMessage: any = null
 
 sw.addEventListener('notificationclick', function (event) {
   event.notification.close()
@@ -59,31 +59,31 @@ sw.addEventListener('notificationclick', function (event) {
       for (let i = 0; i < matchedClients.length; i++) {
         const client = matchedClients[i]
         if (client.url === url) {
+          targetMessage = 'type: focusClient'
           return focusClient(client)
             .then(navigateClient)
             .then(() => requestNavigation(client))
         }
       }
 
+      targetMessage = 'type: openWindow'
       return clients.openWindow(url).then(focusClient)
     })
   )
 })
 
 sw.addEventListener('message', (event) => {
-  console.log('message From Service Worker: ' + JSON.stringify(event.data))
+  const source = event.source
 
-  targetClient?.postMessage?.({
-    type: 'message',
-    message: 'message by target client',
-    data: event.data,
-    url: targetUrl,
-  })
+  if (source && targetUrl) {
+    event.source?.postMessage({
+      type: 'message',
+      message: targetMessage,
+      data: event.data,
+      url: targetUrl,
+    })
 
-  event.source?.postMessage({
-    type: 'message',
-    message: 'message by source',
-    data: event.data,
-    url: targetUrl,
-  })
+    targetMessage = ''
+    targetUrl = ''
+  }
 })

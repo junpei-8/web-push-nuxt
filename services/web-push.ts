@@ -7,6 +7,8 @@ const _swCookieName = 'WebPushSubscriptionEndpoint'
 let _swRegistration: ServiceWorkerRegistration | null = null
 
 serviceWorker?.addEventListener('message', (event) => {
+  console.log('message from service worker', event.data)
+
   appToastStore.open(
     'message From Service Worker: ' + JSON.stringify(event.data),
     { color: 'success' }
@@ -21,25 +23,6 @@ const _gettingSwRegistration = serviceWorker
     registration.active?.postMessage({
       type: 'message',
       data: 'Hello from client on no wait ready',
-    })
-
-    serviceWorker.ready.then((allRegistration) => {
-      console.log('送信！')
-
-      registration.active?.postMessage({
-        type: 'message',
-        data: 'Hello from client',
-      })
-
-      allRegistration.active?.postMessage({
-        type: 'message',
-        data: 'Hello from client By allRegistration',
-      })
-
-      serviceWorker.controller?.postMessage({
-        type: 'message from client By controller',
-        data: 'Hello from client',
-      })
     })
 
     return (_swRegistration = registration)
