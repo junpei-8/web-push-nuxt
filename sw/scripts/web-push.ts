@@ -38,7 +38,9 @@ sw.addEventListener('notificationclick', function (event) {
       const originUrl = sw.location.origin
       const url = originUrl + noticeData.url || ''
 
+      console.log('matchedClients', matchedClients)
       setTimeout(() => {
+        console.log('matchedClients', matchedClients)
         console.log('url: ', url)
         console.log('originUrl: ', originUrl)
       }, 2000)
