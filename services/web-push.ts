@@ -5,36 +5,41 @@ import type { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/
 const _swCookieName = 'WebPushSubscriptionEndpoint'
 
 let _swRegistration: ServiceWorkerRegistration | null = null
+export async function registerServiceWorker() {
+  if (!serviceWorker) return null
+  if (_swRegistration) return _swRegistration
 
-serviceWorker?.addEventListener('message', (event) => {
-  const data = event.data
+  const registration = (_swRegistration = await serviceWorker.register(
+    '/sw/service-worker.js',
+    { scope: '/sw/' }
+  ))
 
-  if (data.type === 'navigation' && data.pathname) {
-    appToastStore.open('Redirect: ' + data.pathname, { color: 'info' })
-    useRouter().push(data.pathname)
-  }
-})
+  appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
-const _gettingSwRegistration = serviceWorker
-  ?.register('/sw/web-push.js', { scope: '/sw/' })
-  .then((registration) => {
-    appToastStore.open('Service Worker を登録しました', { color: 'success' })
-    return (_swRegistration = registration)
+  serviceWorker.addEventListener('message', (event) => {
+    const data = event.data
+    if (!data) return
+
+    const { type, pathname } = data
+
+    if (type === 'navigation' && pathname) {
+      appToastStore.open('リダイレクト: ' + pathname, { color: 'info' })
+      useRouter().push(data.pathname)
+    }
   })
+
+  return registration
+}
 
 /** Web Push の ServiceWorker を登録する */
 export async function registerWebPushServiceWorker() {
-  if (!_gettingSwRegistration) return null
+  const registration = _swRegistration || (await registerServiceWorker())
 
-  const registration = _swRegistration || (await _gettingSwRegistration)
-
-  appToastStore.open('Web Push のスクリプトの読み込みが完了しました', {
-    color: 'success',
-  })
-
-  appToastStore.open('Service Worker デバイストークンを発行しています', {
-    color: 'info',
-  })
+  if (!registration) {
+    return appToastStore.open('Service Worker の登録に失敗しました', {
+      color: 'error',
+    })
+  }
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
@@ -67,6 +72,10 @@ export async function registerWebPushServiceWorker() {
     if (error.value) console.log(error.value)
 
     deleteCookie(_swCookieName)
+
+    appToastStore.open('既存の Subscription を削除しました', {
+      color: 'success',
+    })
   }
 
   // 有効期限を生成
@@ -106,8 +115,6 @@ export async function subscribeWebPushWithRequest() {
 
   const permission = await requestNotificationPermission()
   if (permission !== 'granted') return null
-
-  appToastStore.open('Web Push に登録しています。', { color: 'info' })
 
   return registerWebPushServiceWorker()
 }
