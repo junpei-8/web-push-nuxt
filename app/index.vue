@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import '~/styles/global.scss'
 
-import {
-  subscribeWebPush,
-  subscribeWebPushWithRequest,
-} from '~/services/web-push'
+import { subscribeWebPushWithRequest } from '~/services/web-push'
 import type { WebPushNotificationsPostRequestBody } from '~/server/api/web-push/notifications.post'
 import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
-// 起動時に Web Push に登録する
-subscribeWebPushWithRequest()?.catch(() =>
-  appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
-)
+onMounted(() => {
+  // 起動時に Web Push に登録する
+  // NOTE: onMounted の中でしか有効にならない
+  subscribeWebPushWithRequest()?.catch(() =>
+    appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
+  )
+})
 
 // Web Push Notification を送信する際のカスタムプロップス
 const webPushNotificationPostRequestBodyStates =
