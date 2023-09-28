@@ -9,12 +9,18 @@ export async function registerServiceWorker() {
   if (!serviceWorker) return null
   if (_swRegistration) return _swRegistration
 
-  const registration = (_swRegistration = await serviceWorker.register(
-    '/sw/web-push.js',
-    { scope: '/sw/' }
-  ))
+  const registration = await serviceWorker.register('/sw/web-push.js', {
+    scope: '/sw/',
+  })
 
   appToastStore.open('Service Worker を登録しました', { color: 'success' })
+
+  // Service Worker が有効になるまで待つ
+  await serviceWorker.ready
+
+  appToastStore.open('Service Worker が有効になりました', { color: 'success' })
+
+  _swRegistration = registration
 
   serviceWorker.addEventListener('message', (event) => {
     const data = event.data
