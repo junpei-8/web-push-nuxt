@@ -10,7 +10,7 @@ export async function registerServiceWorker() {
   if (_swRegistration) return _swRegistration
 
   const registration = (_swRegistration = await serviceWorker.register(
-    '/sw/service-worker.js',
+    '/sw/web-push.js',
     { scope: '/sw/' }
   ))
 
