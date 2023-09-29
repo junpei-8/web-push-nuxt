@@ -2,51 +2,40 @@ import { appToastStore } from '~/app/stores/toast'
 import type { WebPushSubscriptionsDeleteRequestBody } from '~/server/api/web-push/subscriptions.delete'
 import type { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/subscriptions.post'
 
-const _swCookieName = 'WebPushSubscriptionEndpoint'
+const _webPushEndpointCookieName = 'WebPushSubscriptionEndpoint'
 
-let _swRegistration: ServiceWorkerRegistration | null = null
-export async function registerServiceWorker() {
-  if (!serviceWorker) return null
-  if (_swRegistration) return _swRegistration
+// NOTE: スクリプト読み込み時に起動しないと IOS Safari で正常に動作しなくなる
+const _webPushServiceWorkerRegistration = serviceWorker
+  ?.register('/sw/web-push.js', { scope: '/sw/' })
+  .then((registration) => {
+    appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
-  const registration = await serviceWorker.register('/sw/web-push.js', {
-    scope: '/sw/',
+    serviceWorker.addEventListener('message', (event) => {
+      const data = event.data
+      if (!data) return
+
+      const { type, pathname } = data
+
+      if (type === 'navigation' && pathname) {
+        appToastStore.open('リダイレクト: ' + pathname, { color: 'info' })
+        useRouter().push(data.pathname)
+      }
+    })
+
+    registration.addEventListener('updatefound', () =>
+      appToastStore.open('Service Worker の更新が見つかりました', {
+        color: 'info',
+      })
+    )
+
+    return registration
   })
-
-  appToastStore.open('Service Worker を登録しました', { color: 'success' })
-
-  // Service Worker が有効になるまで待つ
-  await serviceWorker.ready
-
-  appToastStore.open('Service Worker が有効になりました', { color: 'success' })
-
-  _swRegistration = registration
-
-  serviceWorker.addEventListener('message', (event) => {
-    const data = event.data
-    if (!data) return
-
-    const { type, pathname } = data
-
-    if (type === 'navigation' && pathname) {
-      appToastStore.open('リダイレクト: ' + pathname, { color: 'info' })
-      useRouter().push(data.pathname)
-    }
-  })
-
-  return registration
-}
 
 /** Web Push の ServiceWorker を登録する */
 export async function registerWebPushServiceWorker() {
-  const registration = _swRegistration || (await registerServiceWorker())
+  if (!_webPushServiceWorkerRegistration) return
 
-  if (!registration) {
-    appToastStore.open('Service Worker の登録に失敗しました', {
-      color: 'error',
-    })
-    return null
-  }
+  const registration = await _webPushServiceWorkerRegistration
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
@@ -60,7 +49,7 @@ export async function registerWebPushServiceWorker() {
   const { endpoint, keys, expirationTime = null } = subscription.toJSON()
   if (!endpoint || !keys) return null
 
-  const existingEndpoint = getCookie(_swCookieName)
+  const existingEndpoint = getCookie(_webPushEndpointCookieName)
 
   // 既に登録済みの Subscription と Endpoint 同様のものであれば何もしない
   if (existingEndpoint === endpoint) return true
@@ -78,7 +67,7 @@ export async function registerWebPushServiceWorker() {
 
     if (error.value) console.log(error.value)
 
-    deleteCookie(_swCookieName)
+    deleteCookie(_webPushEndpointCookieName)
 
     appToastStore.open('既存の Subscription を削除しました', {
       color: 'success',
@@ -93,7 +82,9 @@ export async function registerWebPushServiceWorker() {
   }
 
   // Cookie を設定
-  setCookie(_swCookieName, endpoint, { expires: expiredAt || Infinity })
+  setCookie(_webPushEndpointCookieName, endpoint, {
+    expires: expiredAt || Infinity,
+  })
 
   const subscriptionsPostRequest: WebPushSubscriptionsPostRequestBody = {
     endpoint,
@@ -109,7 +100,7 @@ export async function registerWebPushServiceWorker() {
 
   if (error.value) {
     // ↓ エラー時は Cookie を削除する
-    deleteCookie(_swCookieName)
+    deleteCookie(_webPushEndpointCookieName)
     console.error(error.value)
     return false
   }
