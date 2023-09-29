@@ -129,6 +129,8 @@ export async function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
       ? Notification.permission
       : await requestNotificationPermission()
 
+  appToastStore.open('Permission: ' + permission)
+
   if (permission !== 'granted') return null
 
   return registerWebPushServiceWorker()
