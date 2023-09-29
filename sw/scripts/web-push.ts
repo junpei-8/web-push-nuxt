@@ -44,14 +44,16 @@ sw.addEventListener('notificationclick', function (event) {
           return client.focus()
         }
 
+        // 同一 Origin で開いているタブがなければ新規に開く
         if (!matchedClientLength) return clients.openWindow(url)
 
+        // 既に開いているタブがあればフォーカスする
         for (let i = 0; i < matchedClientLength; i++) {
           const client = matchedClients[i]
-          if (client.url === url) focusClient(client)
+          if (client.url === url) return focusClient(client)
         }
 
-        // matchedClients は Service Worker と同一の origin であることが保証されている
+        // 既に開いているタブがない場合は最初のタブをフォーカスする
         return focusClient(matchedClients[0])
       })
   )

@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import '~/styles/global.scss'
 
-import { subscribeWebPushWithRequest } from '~/services/web-push'
 import type { WebPushNotificationsPostRequestBody } from '~/server/api/web-push/notifications.post'
+import {
+  subscribeWebPush,
+  subscribeWebPushOnChangeVisibility,
+} from '~/services/web-push'
 import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
 onMounted(() => {
   // 起動時に Web Push に登録する
   // NOTE: onMounted の中でしか有効にならない
-  subscribeWebPushWithRequest()?.catch(() =>
-    appToastStore.open('Web Push の登録に失敗しました', { color: 'error' })
-  )
+  // subscribeWebPushWithRequestOnVisibility()
+  console.log('onMounted')
+  subscribeWebPush()
+  subscribeWebPushOnChangeVisibility({ withRequest: false })
 })
 
 // Web Push Notification を送信する際のカスタムプロップス
@@ -56,7 +60,7 @@ async function sendWebPushNotification(event: Event) {
     <NuxtPage />
 
     <div class="web-push-actions">
-      <VBtn variant="text" @click="subscribeWebPushWithRequest">
+      <VBtn variant="text" @click="subscribeWebPush">
         Subscribe Device for Web Push
       </VBtn>
 

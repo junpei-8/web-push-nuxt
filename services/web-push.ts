@@ -117,31 +117,29 @@ export async function registerWebPushServiceWorker() {
   return true
 }
 
-export async function subscribeWebPushWithRequest() {
-  console.log('subscribeWebPushWithRequest')
+export interface SubscribeWebPushOptions {
+  /** @default true */
+  withRequest?: boolean
+}
+export async function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
   if (!IS_SUPPORTED_NOTIFICATION) return null
 
-  const permission = await requestNotificationPermission()
-  console.log('permission', permission)
+  const permission =
+    options.withRequest === false
+      ? Notification.permission
+      : await requestNotificationPermission()
+
   if (permission !== 'granted') return null
 
   return registerWebPushServiceWorker()
 }
-
-export function subscribeWebPush() {
-  if (!IS_SUPPORTED_NOTIFICATION) return null
-
-  const permission = Notification.permission
-  if (permission !== 'granted') return null
-
-  return registerWebPushServiceWorker()
-}
-
-export function subscribeWebPushOnChangeVisibility() {
+export function subscribeWebPushOnChangeVisibility(
+  options: SubscribeWebPushOptions = {}
+) {
   if (!IS_SUPPORTED_NOTIFICATION) return
 
   const onChangeVisibility = () => {
-    if (document.visibilityState === 'visible') subscribeWebPush()
+    if (document.visibilityState === 'visible') subscribeWebPush(options)
   }
 
   document.addEventListener('visibilitychange', onChangeVisibility)
