@@ -9,14 +9,11 @@ import {
 import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
-onMounted(() => {
-  // 起動時に Web Push に登録する
-  // NOTE: onMounted の中でしか有効にならない
-  // subscribeWebPushWithRequestOnVisibility()
-  appToastStore.open('Subscribe を開始しました。')
-  subscribeWebPush()
-  subscribeWebPushOnChangeVisibility({ withRequest: false })
-})
+// 起動時に Web Push に登録する
+subscribeWebPush()
+
+// 画面が再度 focus された時に Web Push に登録する
+onMounted(() => subscribeWebPushOnChangeVisibility({ withRequest: false }))
 
 // Web Push Notification を送信する際のカスタムプロップス
 const webPushNotificationPostRequestBodyStates =
