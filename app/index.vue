@@ -13,7 +13,7 @@ onMounted(() => {
   // 起動時に Web Push に登録する
   // NOTE: onMounted の中でしか有効にならない
   // subscribeWebPushWithRequestOnVisibility()
-  console.log('onMounted')
+  appToastStore.open('Subscribe を開始しました。')
   subscribeWebPush()
   subscribeWebPushOnChangeVisibility({ withRequest: false })
 })

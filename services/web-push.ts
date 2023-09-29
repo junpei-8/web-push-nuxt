@@ -139,7 +139,10 @@ export function subscribeWebPushOnChangeVisibility(
   if (!IS_SUPPORTED_NOTIFICATION) return
 
   const onChangeVisibility = () => {
-    if (document.visibilityState === 'visible') subscribeWebPush(options)
+    if (document.visibilityState === 'visible') {
+      appToastStore.open('Visibility が有効になりました')
+      subscribeWebPush(options)
+    }
   }
 
   document.addEventListener('visibilitychange', onChangeVisibility)
