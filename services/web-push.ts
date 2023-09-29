@@ -42,9 +42,10 @@ export async function registerWebPushServiceWorker() {
   const registration = _swRegistration || (await registerServiceWorker())
 
   if (!registration) {
-    return appToastStore.open('Service Worker の登録に失敗しました', {
+    appToastStore.open('Service Worker の登録に失敗しました', {
       color: 'error',
     })
+    return null
   }
 
   const subscription = await registration.pushManager.subscribe({
@@ -117,9 +118,8 @@ export async function registerWebPushServiceWorker() {
 }
 
 export async function subscribeWebPushWithRequest() {
-  if (!IS_SUPPORTED_NOTIFICATION) return null
-
   console.log('subscribeWebPushWithRequest')
+  if (!IS_SUPPORTED_NOTIFICATION) return null
 
   const permission = await requestNotificationPermission()
   console.log('permission', permission)

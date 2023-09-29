@@ -8,9 +8,4 @@ export function requestNotificationPermission() {
   const permission = Notification.permission
   if (permission !== 'default') return Promise.resolve(permission)
   return new Promise((resolve) => Notification.requestPermission(resolve))
-  // try {
-  //   Notification.requestPermission().then(() => Notification.permission)
-  // } catch {
-  //   return new Promise((resolve) => Notification.requestPermission(resolve))
-  // }
 }
