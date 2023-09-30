@@ -12,6 +12,17 @@ const sw = self as unknown as ServiceWorkerGlobalScope
 
 console.log('load sw')
 
+sw.addEventListener('install', (event) => {
+  console.log('installed sw')
+
+  // The promise that skipWaiting() returns can be safely ignored.
+  sw.skipWaiting()
+
+  // Perform any other actions required for your
+  // service worker to install, potentially inside
+  // of event.waitUntil();
+})
+
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
   if (!payload) return
