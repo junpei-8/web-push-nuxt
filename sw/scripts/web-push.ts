@@ -41,12 +41,9 @@ sw.addEventListener('notificationclick', function (event) {
         const url = originUrl + pathname
 
         function focusClient(client: WindowClient) {
-          client.postMessage({ type: 'navigation', pathname })
           if (!client.focus) return Promise.resolve(null)
-          return client.focus().then((client) => {
-            client.postMessage({ type: 'navigation', pathname })
-            return client
-          })
+          client.postMessage({ type: 'navigation', pathname })
+          return client.focus()
         }
 
         // 同一 Origin で開いているタブがなければ新規に開く
