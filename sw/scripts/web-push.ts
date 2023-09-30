@@ -31,6 +31,8 @@ sw.addEventListener('notificationclick', function (event) {
     clients
       .matchAll({ type: 'window', includeUncontrolled: true })
       .then(function (matchedClients) {
+        matchedClients.forEach((client) => client.postMessage('test!'))
+
         const matchedClientLength = matchedClients.length
         const noticeData: NotificationData = event.notification.data || {}
 
