@@ -10,7 +10,7 @@ interface NotificationData {
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
-console.log('sw load')
+console.log('load sw')
 
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
@@ -20,12 +20,11 @@ sw.addEventListener('push', function (event) {
 
   const data: NotificationData = { pathname }
 
-  console.log('web push')
-
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
 sw.addEventListener('notificationclick', function (event) {
+  event.stopImmediatePropagation()
   event.notification.close()
 
   /** @type {Clients} */
@@ -33,10 +32,9 @@ sw.addEventListener('notificationclick', function (event) {
 
   event.waitUntil(
     clients
-      .matchAll({ includeUncontrolled: true })
+      .matchAll({ type: 'window', includeUncontrolled: true })
       .then(function (matchedClients) {
         console.log(matchedClients)
-        matchedClients.forEach((client) => client.postMessage('test!'))
 
         const matchedClientLength = matchedClients.length
         const noticeData: NotificationData = event.notification.data || {}
@@ -54,21 +52,14 @@ sw.addEventListener('notificationclick', function (event) {
         // 同一 Origin で開いているタブがなければ新規に開く
         if (!matchedClientLength) return clients.openWindow(url)
 
-        matchedClients
-          .filter((client) => client.type === 'window')
-          .forEach((windowClient) => {
-            windowClient.postMessage('testやで！')
-            const client = windowClient as WindowClient
-            if (client.url === url) return focusClient(client)
-          })
-        // // 既に開いているタブがあればフォーカスする
-        // for (let i = 0; i < matchedClientLength; i++) {
-        //   const client = matchedClients[i]
-        //   if (client.url === url) return focusClient(client)
-        // }
+        // 既に開いているタブがあればフォーカスする
+        for (let i = 0; i < matchedClientLength; i++) {
+          const client = matchedClients[i]
+          if (client.url === url) return focusClient(client)
+        }
 
-        // // 既に開いているタブがない場合は最初のタブをフォーカスする
-        // return focusClient(matchedClients[0])
+        // 既に開いているタブがない場合は最初のタブをフォーカスする
+        return focusClient(matchedClients[0])
       })
   )
 })
