@@ -45,7 +45,11 @@ sw.addEventListener('notificationclick', function (event) {
         }
 
         // 同一 Origin で開いているタブがなければ新規に開く
-        if (!matchedClientLength) return clients.openWindow(url)
+        if (!matchedClientLength)
+          return clients.openWindow(url).then((client) => {
+            client?.postMessage({ test: 'test' })
+            return client
+          })
 
         // 既に開いているタブがあればフォーカスする
         for (let i = 0; i < matchedClientLength; i++) {
