@@ -15,7 +15,7 @@ export async function updateWebPushServiceWorker(
 
   await (_updatingWebPushSwRegistration = updatingRegistration)
 
-  appToastStore.open('Service Worker を更新しました', { color: 'success' })
+  appToastStore.open('Service Worker を更新しました', { color: 'info' })
 
   // 更新が完了したら 更新中を管理している変数を null にする
   _updatingWebPushSwRegistration = null
@@ -62,9 +62,6 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
 
   // Service Worker を更新する関数を定義
   const updateRegistration = () => updateWebPushServiceWorker(registration)
-
-  // 更新する
-  await updateRegistration()
 
   // 新しい更新があった時に Service Worker を更新するイベントリスナーを追加
   addEventListener('updatefound', updateRegistration)
