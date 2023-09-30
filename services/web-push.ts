@@ -2,6 +2,7 @@ import { appToastStore } from '~/app/stores/toast'
 import type { WebPushSubscriptionsDeleteRequestBody } from '~/server/api/web-push/subscriptions.delete'
 import type { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/subscriptions.post'
 
+// Register の状態を管理するキャッシュ
 let _webPushSwRegistration: ServiceWorkerRegistration | null = null
 let _gettingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
 let _updatingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
@@ -18,13 +19,37 @@ export async function updateWebPushServiceWorker(
   _updatingWebPushSwRegistration = null
 }
 
+interface RegisterWebPushServiceWorkerReturns {
+  registration: ServiceWorkerRegistration
+  registrationType: 'initializing' | 'updating' | 'fresh' | 'cached'
+}
 /** Web Push の Service Worker を読み込む */
-export async function registerWebPushServiceWorker() {
+export async function registerWebPushServiceWorker(): Promise<RegisterWebPushServiceWorkerReturns> {
   if (!serviceWorker) throw new Error('Service Worker is not supported')
 
-  if (_updatingWebPushSwRegistration) await _updatingWebPushSwRegistration
-  if (_gettingWebPushSwRegistration) return _gettingWebPushSwRegistration
-  if (_webPushSwRegistration) return _webPushSwRegistration
+  // 更新中の場合
+  if (_updatingWebPushSwRegistration) {
+    return {
+      registration: await _updatingWebPushSwRegistration,
+      registrationType: 'updating',
+    }
+  }
+
+  // 初期化中の場合
+  if (_gettingWebPushSwRegistration) {
+    return {
+      registration: await _gettingWebPushSwRegistration,
+      registrationType: 'initializing',
+    }
+  }
+
+  // キャッシュが存在する場合
+  if (_webPushSwRegistration) {
+    return {
+      registration: _webPushSwRegistration,
+      registrationType: 'cached',
+    }
+  }
 
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', { scope: '/sw/' }))
@@ -52,7 +77,10 @@ export async function registerWebPushServiceWorker() {
   _webPushSwRegistration = registration
   _gettingWebPushSwRegistration = null
 
-  return registration
+  return {
+    registration,
+    registrationType: 'fresh',
+  }
 }
 
 /** Web Push の ServiceWorker を登録する */
@@ -101,10 +129,14 @@ const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
 
 /** Web Push の ServiceWorker を登録する */
 export async function subscribeWebPushServiceWorker() {
-  const registration = await registerWebPushServiceWorker()
+  // Web Push サービスワーカーを登録する
+  const { registration, registrationType } =
+    await registerWebPushServiceWorker()
 
-  // Service Worker からナビゲーションリクエストを監視しナビゲーションする Listener を追加
-  listenWebPushServiceWorkerNavigationRequest(registration)
+  // 一番最初の登録時の場合
+  if (registrationType === 'fresh') {
+    listenWebPushServiceWorkerNavigationRequest(registration)
+  }
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
