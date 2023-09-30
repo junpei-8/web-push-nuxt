@@ -7,7 +7,7 @@ let _webPushSwRegistration: ServiceWorkerRegistration | null = null
 let _gettingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
 let _updatingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
 
-/** Service Worker を更新する関数 */
+/** Service Worker を更新する関数。 */
 export async function updateWebPushServiceWorker(
   registration: ServiceWorkerRegistration
 ) {
@@ -127,7 +127,7 @@ export function listenWebPushServiceWorkerNavigationRequest(
 
 const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
 
-/** Web Push の ServiceWorker を登録する */
+/** Web Push の ServiceWorker を登録する。 */
 export async function subscribeWebPushServiceWorker() {
   // Web Push サービスワーカーを登録する
   const { registration, registrationType } =
@@ -136,6 +136,9 @@ export async function subscribeWebPushServiceWorker() {
   // 一番最初の登録時の場合
   if (registrationType === 'fresh') {
     listenWebPushServiceWorkerNavigationRequest(registration)
+    appToastStore.open('Navigation Request Listener を登録しました', {
+      color: 'success',
+    })
   }
 
   const subscription = await registration.pushManager.subscribe({
