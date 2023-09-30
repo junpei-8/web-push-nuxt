@@ -15,6 +15,8 @@ export async function updateWebPushServiceWorker(
 
   await (_updatingWebPushSwRegistration = updatingRegistration)
 
+  appToastStore.open('Service Worker を更新しました', { color: 'success' })
+
   // 更新が完了したら 更新中を管理している変数を null にする
   _updatingWebPushSwRegistration = null
 }
@@ -110,6 +112,10 @@ export function listenWebPushServiceWorkerNavigationRequest(
   // Service Worker からのメッセージを受け取った時に発火するイベントリスナーを追加する
   serviceWorker.addEventListener('message', navigate)
 
+  appToastStore.open('Navigation Request Listener を登録しました', {
+    color: 'success',
+  })
+
   // Service Worker からのメッセージを受け取った時に発火するイベントリスナーを削除する
   const removeEventListener = () => {
     serviceWorker.removeEventListener('message', navigate)
@@ -143,9 +149,6 @@ export async function subscribeWebPushServiceWorker() {
   // 一番最初の登録時の場合
   if (registrationType === 'fresh') {
     listenWebPushServiceWorkerNavigationRequest(registration)
-    appToastStore.open('Navigation Request Listener を登録しました', {
-      color: 'success',
-    })
   }
 
   const subscription = await registration.pushManager.subscribe({
