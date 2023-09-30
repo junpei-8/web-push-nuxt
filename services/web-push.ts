@@ -15,6 +15,7 @@ export async function updateWebPushServiceWorker(
 
   await (_updatingWebPushSwRegistration = updatingRegistration)
 
+  listenWebPushServiceWorkerNavigationRequest(registration)
   appToastStore.open('Service Worker を更新しました', { color: 'info' })
 
   // 更新が完了したら 更新中を管理している変数を null にする
@@ -144,9 +145,9 @@ export async function subscribeWebPushServiceWorker() {
   })
 
   // 一番最初の登録時の場合
-  if (registrationType === 'fresh') {
-    listenWebPushServiceWorkerNavigationRequest(registration)
-  }
+  // if (registrationType === 'fresh') {
+  //   listenWebPushServiceWorkerNavigationRequest(registration)
+  // }
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
