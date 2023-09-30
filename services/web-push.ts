@@ -271,53 +271,9 @@ serviceWorker?.addEventListener('message', (event) => {
   )
 })
 
-serviceWorker?.addEventListener('message', (event) => {
-  appToastStore.open(
-    'Message from Service Worker2: ' + JSON.stringify(event.data),
-    { color: 'info' }
-  )
-})
-
-serviceWorker?.addEventListener('message', (event) => {
-  appToastStore.open(
-    'Message from Service Worker3: ' + JSON.stringify(event.data),
-    { color: 'info' }
-  )
-})
-
 serviceWorker?.addEventListener('messageerror', (event) => {
   appToastStore.open(
-    'Message from Service Worker Error1: ' + JSON.stringify(event.data),
-    { color: 'info' }
+    'Message from Service Worker Error: ' + JSON.stringify(event.data),
+    { color: 'error' }
   )
 })
-
-serviceWorker?.addEventListener('controllerchange', (event) => {
-  appToastStore.open('Service Worker Controller Changes', { color: 'info' })
-})
-
-if (serviceWorker) {
-  serviceWorker.onmessage = (event) => {
-    appToastStore.open(
-      'Message from Service Worker4: ' + JSON.stringify(event.data),
-      { color: 'info' }
-    )
-  }
-
-  serviceWorker.onmessageerror = (event) => {
-    appToastStore.open(
-      'Message from Service Worker Error2: ' + JSON.stringify(event.data),
-      { color: 'info' }
-    )
-  }
-
-  setTimeout(() => {
-    appToastStore.open('Add Event Service Worker Message Listener')
-    serviceWorker.addEventListener('message', (event) => {
-      appToastStore.open(
-        'Message from Service Worker5: ' + JSON.stringify(event.data),
-        { color: 'info' }
-      )
-    })
-  }, 2000)
-}
