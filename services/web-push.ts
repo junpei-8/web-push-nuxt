@@ -176,7 +176,10 @@ export async function subscribeWebPushServiceWorker() {
   const existingEndpoint = getCookie(_webPushSubscriptionEndpointCookieName)
 
   // 既に登録済みの Subscription と Endpoint 同様のものであれば何もしない
-  if (existingEndpoint === endpoint) return true
+  if (existingEndpoint === endpoint) {
+    appToastStore.open('既に登録済みの Registration です', { color: 'info' })
+    return registration
+  }
 
   // 既に登録済みの Subscription と Endpoint が異なるものであれば、既存の Subscription を削除する
   if (existingEndpoint) {
@@ -225,11 +228,10 @@ export async function subscribeWebPushServiceWorker() {
   if (error.value) {
     // ↓ エラー時は Cookie を削除する
     deleteCookie(_webPushSubscriptionEndpointCookieName)
-    console.error(error.value)
-    return false
+    throw error.value
   }
 
-  return true
+  return registration
 }
 
 export interface SubscribeWebPushOptions {
