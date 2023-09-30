@@ -91,7 +91,7 @@ export function navigateByWebPushServiceWorkerRequest(event: MessageEvent) {
   const { type, pathname } = data
 
   if (type === 'navigation' && pathname) {
-    appToastStore.open('リダイレクト: ' + pathname, { color: 'info' })
+    appToastStore.open('Redirect: ' + pathname, { color: 'info' })
     useRouter().push(data.pathname)
   }
 }
@@ -132,6 +132,10 @@ export async function subscribeWebPushServiceWorker() {
   // Web Push サービスワーカーを登録する
   const { registration, registrationType } =
     await registerWebPushServiceWorker()
+
+  appToastStore.open('Registration Type: ' + registrationType, {
+    color: 'info',
+  })
 
   // 一番最初の登録時の場合
   if (registrationType === 'fresh') {
