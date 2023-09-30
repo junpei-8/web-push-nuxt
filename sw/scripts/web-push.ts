@@ -10,6 +10,8 @@ interface NotificationData {
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
+console.log('sw load')
+
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
   if (!payload) return
@@ -17,6 +19,8 @@ sw.addEventListener('push', function (event) {
   const { title, content: body, icon, pathname } = payload
 
   const data: NotificationData = { pathname }
+
+  console.log('web push')
 
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
@@ -31,6 +35,7 @@ sw.addEventListener('notificationclick', function (event) {
     clients
       .matchAll({ includeUncontrolled: true })
       .then(function (matchedClients) {
+        console.log(matchedClients)
         matchedClients.forEach((client) => client.postMessage('test!'))
 
         const matchedClientLength = matchedClients.length
