@@ -257,3 +257,10 @@ export function subscribeWebPushOnChangeVisibility(
   document.addEventListener('visibilitychange', onChangeVisibility)
   return () => removeEventListener('visibilitychange', onChangeVisibility)
 }
+
+serviceWorker?.addEventListener('message', (event) => {
+  appToastStore.open(
+    'Message from Service Worker: ' + JSON.stringify(event.data),
+    { color: 'info' }
+  )
+})
