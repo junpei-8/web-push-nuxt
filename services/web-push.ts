@@ -114,6 +114,9 @@ export function listenWebPushServiceWorkerNavigationRequest(
   const removeEventListener = () => {
     serviceWorker.removeEventListener('message', navigate)
     removeUnregisterListener()
+    appToastStore.open('Navigation Request Listener が削除されました', {
+      color: 'success',
+    })
   }
 
   // Service Worker が Unregister された時に、Service Worker からのメッセージを受け取った時に発火するイベントリスナーを削除する
