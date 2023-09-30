@@ -29,7 +29,7 @@ sw.addEventListener('notificationclick', function (event) {
 
   event.waitUntil(
     clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
+      .matchAll({ includeUncontrolled: true })
       .then(function (matchedClients) {
         matchedClients.forEach((client) => client.postMessage('test!'))
 
@@ -49,14 +49,21 @@ sw.addEventListener('notificationclick', function (event) {
         // 同一 Origin で開いているタブがなければ新規に開く
         if (!matchedClientLength) return clients.openWindow(url)
 
-        // 既に開いているタブがあればフォーカスする
-        for (let i = 0; i < matchedClientLength; i++) {
-          const client = matchedClients[i]
-          if (client.url === url) return focusClient(client)
-        }
+        matchedClients
+          .filter((client) => client.type === 'window')
+          .forEach((windowClient) => {
+            windowClient.postMessage('testやで！')
+            const client = windowClient as WindowClient
+            if (client.url === url) return focusClient(client)
+          })
+        // // 既に開いているタブがあればフォーカスする
+        // for (let i = 0; i < matchedClientLength; i++) {
+        //   const client = matchedClients[i]
+        //   if (client.url === url) return focusClient(client)
+        // }
 
-        // 既に開いているタブがない場合は最初のタブをフォーカスする
-        return focusClient(matchedClients[0])
+        // // 既に開いているタブがない場合は最初のタブをフォーカスする
+        // return focusClient(matchedClients[0])
       })
   )
 })
