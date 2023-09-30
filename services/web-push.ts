@@ -55,7 +55,10 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   }
 
   const gettingRegistration = (_gettingWebPushSwRegistration =
-    serviceWorker.register('/sw/web-push.js', { scope: '/sw/' }))
+    serviceWorker.register('/sw/web-push.js', {
+      scope: '/sw/',
+      updateViaCache: 'none',
+    }))
 
   const registration = await gettingRegistration
 
