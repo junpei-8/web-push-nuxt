@@ -260,7 +260,44 @@ export function subscribeWebPushOnChangeVisibility(
 
 serviceWorker?.addEventListener('message', (event) => {
   appToastStore.open(
-    'Message from Service Worker: ' + JSON.stringify(event.data),
+    'Message from Service Worker1: ' + JSON.stringify(event.data),
     { color: 'info' }
   )
 })
+
+serviceWorker?.addEventListener('message', (event) => {
+  appToastStore.open(
+    'Message from Service Worker2: ' + JSON.stringify(event.data),
+    { color: 'info' }
+  )
+})
+
+serviceWorker?.addEventListener('message', (event) => {
+  appToastStore.open(
+    'Message from Service Worker3: ' + JSON.stringify(event.data),
+    { color: 'info' }
+  )
+})
+
+serviceWorker?.addEventListener('messageerror', (event) => {
+  appToastStore.open(
+    'Message from Service Worker Error1: ' + JSON.stringify(event.data),
+    { color: 'info' }
+  )
+})
+
+if (serviceWorker) {
+  serviceWorker.onmessage = (event) => {
+    appToastStore.open(
+      'Message from Service Worker4: ' + JSON.stringify(event.data),
+      { color: 'info' }
+    )
+  }
+
+  serviceWorker.onmessage = (event) => {
+    appToastStore.open(
+      'Message from Service Worker Error2: ' + JSON.stringify(event.data),
+      { color: 'info' }
+    )
+  }
+}
