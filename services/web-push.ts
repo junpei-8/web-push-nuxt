@@ -64,6 +64,8 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   // Service Worker を更新する関数を定義
   const updateRegistration = () => updateWebPushServiceWorker(registration)
 
+  await updateRegistration()
+
   // 新しい更新があった時に Service Worker を更新するイベントリスナーを追加
   addEventListener('updatefound', updateRegistration)
 
