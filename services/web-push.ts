@@ -47,19 +47,10 @@ export async function registerWebPushServiceWorker() {
     removeEventListener('updatefound', updateRegistration)
   )
 
-  addServiceWorkerUnregisterEventListener(registration, () =>
-    console.log('unregister!', registration)
-  )
-
   appToastStore.open('Service Worker が有効になりました', { color: 'success' })
 
   _webPushSwRegistration = registration
   _gettingWebPushSwRegistration = null
-
-  setTimeout(() => {
-    console.log('Unregister !')
-    registration.unregister()
-  }, 8000)
 
   return registration
 }
@@ -102,6 +93,8 @@ export function listenWebPushServiceWorkerNavigationRequest(
     register,
     removeEventListener
   )
+
+  return removeEventListener
 }
 
 const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
@@ -109,6 +102,9 @@ const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
 /** Web Push の ServiceWorker を登録する */
 export async function subscribeWebPushServiceWorker() {
   const registration = await registerWebPushServiceWorker()
+
+  // Service Worker からナビゲーションリクエストを監視しナビゲーションする Listener を追加
+  listenWebPushServiceWorkerNavigationRequest(registration)
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
