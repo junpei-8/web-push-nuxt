@@ -44,12 +44,15 @@ sw.addEventListener('notificationclick', function (event) {
           return client.focus()
         }
 
+        console.log('matchedClients', matchedClients)
+
         // 同一 Origin で開いているタブがなければ新規に開く
         if (!matchedClientLength) return clients.openWindow(url)
 
         // 既に開いているタブがあればフォーカスする
         for (let i = 0; i < matchedClientLength; i++) {
           const client = matchedClients[i]
+          console.log('client: ', JSON.stringify(client))
           if (client.url === url) return focusClient(client)
         }
 
