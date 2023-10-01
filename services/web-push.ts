@@ -65,9 +65,11 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   )
 
   const registrations = await serviceWorker.getRegistrations()
-  appToastStore.open('レジストレーションズ: ' + JSON.stringify(registrations), {
-    color: 'info',
-  })
+  appToastStore.open(
+    'レジストレーションズ: ' +
+      JSON.stringify(registrations.map((reg) => reg.scope)),
+    { color: 'info' }
+  )
   console.log('registrations', await serviceWorker.getRegistrations())
 
   const gettingRegistration = (_gettingWebPushSwRegistration =
