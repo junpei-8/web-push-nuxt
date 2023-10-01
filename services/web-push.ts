@@ -89,12 +89,6 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   _webPushSwRegistration = registration
   _gettingWebPushSwRegistration = null
 
-  registration.getNotifications().then((notifications) =>
-    appToastStore.open('Notifications: ' + JSON.stringify(notifications), {
-      color: 'info',
-    })
-  )
-
   return {
     registration,
     registrationType: 'fresh',
