@@ -54,6 +54,16 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
     }
   }
 
+  appToastStore.open(
+    '過去のコントローラーが存在しました: ' +
+      JSON.stringify(serviceWorker.controller?.state),
+    { color: 'info' }
+  )
+  console.log('controller: ', serviceWorker.controller)
+  serviceWorker.addEventListener('controllerchange', () =>
+    appToastStore.open('コントローラーが変更されました', { color: 'success' })
+  )
+
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', { scope: '/sw/' }))
 
