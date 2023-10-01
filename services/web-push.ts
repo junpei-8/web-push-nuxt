@@ -70,7 +70,6 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
       JSON.stringify(registrations.map((reg) => reg.scope)),
     { color: 'info' }
   )
-  console.log('registrations', await serviceWorker.getRegistrations())
 
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', {

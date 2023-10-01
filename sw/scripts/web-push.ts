@@ -10,14 +10,13 @@ interface NotificationData {
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
-console.log('load sw')
-
 sw.addEventListener('install', function (event) {
-  event.waitUntil(sw.skipWaiting())
+  sw.skipWaiting()
 })
-sw.addEventListener('activate', function (event) {
-  event.waitUntil(sw.clients.claim())
-})
+
+// sw.addEventListener('activate', function (event) {
+//   event.waitUntil(sw.clients.claim())
+// })
 
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
