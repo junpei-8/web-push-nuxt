@@ -15,13 +15,6 @@ console.log('load sw')
 sw.addEventListener('install', function (event) {
   console.log('install')
   event.waitUntil(sw.skipWaiting())
-
-  caches.keys().then(function (cacheNames) {
-    console.log('cache delete', cacheNames)
-    cacheNames.forEach(function (cacheName) {
-      caches.delete(cacheName)
-    })
-  })
 })
 // sw.addEventListener('activate', function (event) {
 //   console.log('activate')

@@ -64,6 +64,8 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
     appToastStore.open('コントローラーが変更されました', { color: 'success' })
   )
 
+  console.log('registrations', await serviceWorker.getRegistrations())
+
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', { scope: '/sw/' }))
 
