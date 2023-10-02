@@ -15,6 +15,7 @@ export async function updateWebPushServiceWorker(
 
   await (_updatingWebPushSwRegistration = updatingRegistration)
 
+  // OPTIMIZE: Update 時ではなく ServiceWorker が過去に登録されているのを判定して登録するのが最適
   listenWebPushServiceWorkerNavigationRequest(registration)
   appToastStore.open('Service Worker を更新しました', { color: 'info' })
 
@@ -67,7 +68,7 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', {
       scope: '/sw/',
-      // updateViaCache: 'none',
+      updateViaCache: 'none',
     }))
 
   const registration = await gettingRegistration
@@ -77,6 +78,8 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
   // Service Worker を更新する関数を定義
   const updateRegistration = () => updateWebPushServiceWorker(registration)
 
+  // 最新の情報を取得する
+  // OPTIMIZE: updateViaCache: 'none' に設定しているので理論上必要ない
   await updateRegistration()
 
   // 新しい更新があった時に Service Worker を更新するイベントリスナーを追加
