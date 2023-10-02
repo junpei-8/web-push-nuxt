@@ -20,13 +20,12 @@ sw.addEventListener('activate', function (event) {
 
 sw.addEventListener('push', function (event) {
   const payload: Record<string, string> = event.data?.json()
+
   if (!payload) return
 
   const { title, content: body, icon, pathname } = payload
 
   const data: NotificationData = { pathname }
-
-  sw.skipWaiting()
 
   event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
@@ -51,8 +50,10 @@ sw.addEventListener('notificationclick', function (event) {
 
         function focusClient(client: WindowClient) {
           if (!client.focus) return Promise.resolve(null)
-          client.postMessage({ type: 'navigation', pathname })
-          return client.focus()
+          return client.focus().then(() => {
+            client.postMessage({ type: 'navigation', pathname })
+            return client
+          })
         }
 
         // 同一 Origin で開いているタブがなければ新規に開く
