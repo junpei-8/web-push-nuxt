@@ -158,10 +158,6 @@ export async function subscribeWebPushServiceWorker() {
   const { registration, registrationType } =
     await registerWebPushServiceWorker()
 
-  appToastStore.open('Registration Type: ' + registrationType, {
-    color: 'info',
-  })
-
   // 一番最初の登録時の場合
   // if (registrationType === 'fresh') {
   //   listenWebPushServiceWorkerNavigationRequest(registration)
