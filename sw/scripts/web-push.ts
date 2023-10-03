@@ -48,6 +48,8 @@ sw.addEventListener('notificationclick', function (event) {
         const originUrl = sw.location.origin
         const url = originUrl + pathname
 
+        console.log('clients', matchedClients)
+
         // function focusClient(client: WindowClient) {
         //   if (!client.focus) return Promise.resolve(null)
         //   return client.focus().then(() => {
