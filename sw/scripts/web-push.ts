@@ -16,6 +16,15 @@ sw.addEventListener('install', function () {
 
 sw.addEventListener('activate', function (event) {
   event.waitUntil(sw.clients.claim())
+
+  try {
+    fetch('https://web-push-nuxt.vercel.app/api/hello', { method: 'GET' }).then(
+      (response) => {
+        console.log('hello!')
+        response.json().then((json) => console.log(json))
+      }
+    )
+  } catch {}
 })
 
 sw.addEventListener('push', function (event) {
