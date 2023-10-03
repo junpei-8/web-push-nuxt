@@ -15,8 +15,6 @@ export async function updateWebPushServiceWorker(
 
   await (_updatingWebPushSwRegistration = updatingRegistration)
 
-  // OPTIMIZE: Update 時ではなく ServiceWorker が過去に登録されているのを判定して登録するのが最適
-  listenWebPushServiceWorkerNavigationRequest(registration)
   appToastStore.open('Service Worker を更新しました', { color: 'info' })
 
   // 更新が完了したら 更新中を管理している変数を null にする
@@ -55,15 +53,15 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
     }
   }
 
-  appToastStore.open(
-    '過去のコントローラーが存在しました: ' +
-      JSON.stringify(serviceWorker.controller?.state),
-    { color: 'info' }
-  )
-  console.log('controller: ', serviceWorker.controller)
   serviceWorker.addEventListener('controllerchange', () =>
     appToastStore.open('コントローラーが変更されました', { color: 'success' })
   )
+
+  // Service Worker からのリクエストをもとにナビゲーションをする関数
+  const navigate = navigateByWebPushServiceWorkerRequest.bind(null)
+
+  // Service Worker からのメッセージを受け取った時に発火するイベントリスナーを追加する
+  serviceWorker.addEventListener('message', navigate)
 
   const gettingRegistration = (_gettingWebPushSwRegistration =
     serviceWorker.register('/sw/web-push.js', {
@@ -71,24 +69,27 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
       updateViaCache: 'none',
     }))
 
-  const registration = await gettingRegistration
+  // 登録が完了し、サービスワーカーが有効になった時に発火するイベントリスナーを追加
+  const [registration] = await Promise.all([
+    gettingRegistration,
+    serviceWorker.ready,
+  ])
 
   appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
   // Service Worker を更新する関数を定義
   const updateRegistration = () => updateWebPushServiceWorker(registration)
 
-  // 最新の情報を取得する
-  // OPTIMIZE: updateViaCache: 'none' に設定しているので理論上必要ない
-  await updateRegistration()
-
   // 新しい更新があった時に Service Worker を更新するイベントリスナーを追加
   addEventListener('updatefound', updateRegistration)
 
-  // Service Worker が Unregister された時に、Service Worker を更新するイベントリスナーを削除する
-  addServiceWorkerUnregisterEventListener(registration, () =>
+  // Service Worker が Unregister された時に関連するイベントリスナーを削除する
+  //   1) Service Worker の更新が見つかったときにアップデートするイベントリスナー
+  //   2) Service Worker から Navigation Request を受け取った時に発火するイベントリスナー
+  addServiceWorkerUnregisterEventListener(registration, () => {
+    serviceWorker.removeEventListener('message', navigate)
     removeEventListener('updatefound', updateRegistration)
-  )
+  })
 
   appToastStore.open('Service Worker が有効になりました', { color: 'success' })
 
@@ -112,42 +113,6 @@ export function navigateByWebPushServiceWorkerRequest(event: MessageEvent) {
     appToastStore.open('Redirect: ' + pathname, { color: 'info' })
     useRouter().push(data.pathname)
   }
-}
-
-/**
- * Web Push Service Worker のナビゲーションリクエストを監視する。
- * Service Worker が Unregister されると、自動的にリスナーを削除は削除される。
- */
-export function listenWebPushServiceWorkerNavigationRequest(
-  register: ServiceWorkerRegistration
-) {
-  if (!serviceWorker) throw new Error('Service Worker is not supported')
-
-  const navigate = navigateByWebPushServiceWorkerRequest.bind(null)
-
-  // Service Worker からのメッセージを受け取った時に発火するイベントリスナーを追加する
-  serviceWorker.addEventListener('message', navigate)
-
-  appToastStore.open('Navigation Request Listener を登録しました', {
-    color: 'success',
-  })
-
-  // Service Worker からのメッセージを受け取った時に発火するイベントリスナーを削除する
-  const removeEventListener = () => {
-    serviceWorker.removeEventListener('message', navigate)
-    removeUnregisterListener()
-    appToastStore.open('Navigation Request Listener が削除されました', {
-      color: 'success',
-    })
-  }
-
-  // Service Worker が Unregister された時に、Service Worker からのメッセージを受け取った時に発火するイベントリスナーを削除する
-  const removeUnregisterListener = listenServiceWorkerUnregisterEvent(
-    register,
-    removeEventListener
-  )
-
-  return removeEventListener
 }
 
 const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
