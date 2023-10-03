@@ -18,13 +18,17 @@ sw.addEventListener('activate', function (event) {
   event.waitUntil(sw.clients.claim())
 
   try {
+    console.log('activate!')
+
     fetch('https://web-push-nuxt.vercel.app/api/hello', { method: 'GET' }).then(
       (response) => {
         console.log('hello!')
         response.json().then((json) => console.log(json))
       }
     )
-  } catch {}
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 sw.addEventListener('push', function (event) {

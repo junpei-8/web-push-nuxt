@@ -69,10 +69,10 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
       updateViaCache: 'none',
     }))
 
-  // 登録が完了するまで待つ
+  // Service Worker の登録が完了するまで待つ
   const registration = await gettingRegistration
 
-  // Service Worker が有効になるまで待つ
+  // 最新の Service Worker が有効になるまで待つ
   await registration.update()
 
   // Service Worker を更新する関数を定義
