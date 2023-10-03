@@ -69,15 +69,11 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
       updateViaCache: 'none',
     }))
 
-  appToastStore.open('Service Worker を登録しています', { color: 'info' })
-
   // 登録が完了するまで待つ
   const registration = await gettingRegistration
 
   // Service Worker が有効になるまで待つ
-  await serviceWorker.ready
-
-  appToastStore.open('Service Worker を登録しました', { color: 'success' })
+  await registration.update()
 
   // Service Worker を更新する関数を定義
   const updateRegistration = () => updateWebPushServiceWorker(registration)
