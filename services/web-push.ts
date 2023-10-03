@@ -69,11 +69,13 @@ export async function registerWebPushServiceWorker(): Promise<RegisterWebPushSer
       updateViaCache: 'none',
     }))
 
-  // 登録が完了し、サービスワーカーが有効になった時に発火するイベントリスナーを追加
-  const [registration] = await Promise.all([
-    gettingRegistration,
-    serviceWorker.ready,
-  ])
+  appToastStore.open('Service Worker を登録しています', { color: 'info' })
+
+  // 登録が完了するまで待つ
+  const registration = await gettingRegistration
+
+  // Service Worker が有効になるまで待つ
+  await serviceWorker.ready
 
   appToastStore.open('Service Worker を登録しました', { color: 'success' })
 
