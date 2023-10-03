@@ -48,25 +48,26 @@ sw.addEventListener('notificationclick', function (event) {
         const originUrl = sw.location.origin
         const url = originUrl + pathname
 
-        function focusClient(client: WindowClient) {
-          if (!client.focus) return Promise.resolve(null)
-          return client.focus().then(() => {
-            client.postMessage({ type: 'navigation', pathname })
-            return client
-          })
-        }
+        // function focusClient(client: WindowClient) {
+        //   if (!client.focus) return Promise.resolve(null)
+        //   return client.focus().then(() => {
+        //     client.postMessage({ type: 'navigation', pathname })
+        //     return client
+        //   })
+        // }
 
         // 同一 Origin で開いているタブがなければ新規に開く
-        if (!matchedClientLength) return clients.openWindow(url)
+        // if (!matchedClientLength) return clients.openWindow(url)
+        return clients.openWindow(url)
 
-        // 既に開いているタブがあればフォーカスする
-        for (let i = 0; i < matchedClientLength; i++) {
-          const client = matchedClients[i]
-          if (client.url === url) return focusClient(client)
-        }
+        // // 既に開いているタブがあればフォーカスする
+        // for (let i = 0; i < matchedClientLength; i++) {
+        //   const client = matchedClients[i]
+        //   if (client.url === url) return focusClient(client)
+        // }
 
-        // 既に開いているタブがない場合は最初のタブをフォーカスする
-        return focusClient(matchedClients[0])
+        // // 既に開いているタブがない場合は最初のタブをフォーカスする
+        // return focusClient(matchedClients[0])
       })
   )
 })

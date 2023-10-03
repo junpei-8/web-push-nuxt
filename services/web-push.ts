@@ -146,7 +146,7 @@ export async function subscribeWebPushServiceWorker() {
 
   // 既に登録済みの Subscription と Endpoint 同様のものであれば何もしない
   if (existingEndpoint === endpoint) {
-    appToastStore.open('既に登録済みの Registration です', { color: 'info' })
+    appToastStore.open('既に登録済みの Registration です', { color: 'warn' })
     return registration
   }
 
@@ -166,7 +166,7 @@ export async function subscribeWebPushServiceWorker() {
     deleteCookie(_webPushSubscriptionEndpointCookieName)
 
     appToastStore.open('既存の Subscription を削除しました', {
-      color: 'success',
+      color: 'warn',
     })
   }
 
@@ -239,12 +239,5 @@ serviceWorker?.addEventListener('message', (event) => {
   appToastStore.open(
     'Message from Service Worker1: ' + JSON.stringify(event.data),
     { color: 'info' }
-  )
-})
-
-serviceWorker?.addEventListener('messageerror', (event) => {
-  appToastStore.open(
-    'Message from Service Worker Error: ' + JSON.stringify(event.data),
-    { color: 'error' }
   )
 })
