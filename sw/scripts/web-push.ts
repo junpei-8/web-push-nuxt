@@ -16,19 +16,6 @@ sw.addEventListener('install', function () {
 
 sw.addEventListener('activate', function (event) {
   event.waitUntil(sw.clients.claim())
-
-  try {
-    console.log('activate!')
-
-    fetch('https://web-push-nuxt.vercel.app/api/hello', { method: 'GET' }).then(
-      (response) => {
-        console.log('hello!')
-        response.json().then((json) => console.log(json))
-      }
-    )
-  } catch (e) {
-    console.error(e)
-  }
 })
 
 sw.addEventListener('push', function (event) {
@@ -62,8 +49,7 @@ sw.addEventListener('notificationclick', function (event) {
 
         /** クライアントをフォーカスする */
         function focusClient(client: WindowClient) {
-          if (!client.focus) return Promise.resolve(null)
-          return client.focus().then(() => {
+          return client.focus().then((client) => {
             client.postMessage({
               type: 'navigation',
               pathname: navigationPathname,
@@ -84,6 +70,7 @@ sw.addEventListener('notificationclick', function (event) {
 
         // ナビゲーション先の情報
         let navigationClient: WindowClient | undefined
+        let navigationPathnameDifference = 0
         let navigationPathnameMatchCount = 0
 
         // 既に開いているタブがあればフォーカスする
@@ -95,13 +82,20 @@ sw.addEventListener('notificationclick', function (event) {
           if (pathname === navigationPathname) return focusClient(client)
 
           // frameType が 'none' の場合はスキップする
-          if (client.frameType === 'none') break
+          if (client.frameType === 'none') continue
 
+          // pathname の文字列が近いクライアントを検索する
           const pathnameMatchCount = findPathnameMatchCount(pathname)
-          if (navigationPathnameMatchCount <= pathnameMatchCount) {
-            navigationClient = client
-            navigationPathnameMatchCount = pathnameMatchCount
-          }
+          if (pathnameMatchCount <= navigationPathnameMatchCount) continue
+
+          // pathname との文字列の差分が小さいクライアントを優先する
+          const pathnameDistance = navigationPathnameLength - pathname.length
+          if (pathnameDistance >= navigationPathnameDifference) continue
+
+          // より差分が少ないクライアントが見つかったら更新する
+          navigationClient = client
+          navigationPathnameDifference = pathnameDistance
+          navigationPathnameMatchCount = pathnameMatchCount
         }
 
         // ナビゲーション先が存在したら Focus する
