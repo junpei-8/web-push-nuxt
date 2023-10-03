@@ -34,7 +34,6 @@ sw.addEventListener('notificationclick', function (event) {
   event.stopImmediatePropagation()
   event.notification.close()
 
-  /** @type {Clients} */
   const clients = sw.clients
 
   event.waitUntil(
@@ -48,6 +47,7 @@ sw.addEventListener('notificationclick', function (event) {
         const navigationPathname = noticeData.pathname || ''
         const navigationPathnameLength = navigationPathname.length
 
+        /** クライアントをフォーカスする */
         function focusClient(client: WindowClient) {
           if (!client.focus) return Promise.resolve(null)
           return client.focus().then(() => {
@@ -59,7 +59,8 @@ sw.addEventListener('notificationclick', function (event) {
           })
         }
 
-        function getPathnameMatchCount(string: string) {
+        /** Pathname と一致する文字数を返す */
+        function findPathnameMatchCount(string: string) {
           let matchCount = 0
           for (let i = 0; i < navigationPathnameLength; i++) {
             if (navigationPathname[i] !== string[i]) break
@@ -68,6 +69,7 @@ sw.addEventListener('notificationclick', function (event) {
           return matchCount
         }
 
+        // ナビゲーション先の情報
         let navigationClient: WindowClient | undefined
         let navigationPathnameMatchCount = 0
 
@@ -82,7 +84,7 @@ sw.addEventListener('notificationclick', function (event) {
           // frameType が 'none' の場合はスキップする
           if (client.frameType === 'none') break
 
-          const pathnameMatchCount = getPathnameMatchCount(pathname)
+          const pathnameMatchCount = findPathnameMatchCount(pathname)
           if (navigationPathnameMatchCount <= pathnameMatchCount) {
             navigationClient = client
             navigationPathnameMatchCount = pathnameMatchCount
