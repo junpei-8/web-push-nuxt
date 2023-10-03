@@ -40,6 +40,7 @@ export interface ToastElement {
 let _id = 0
 const _elements = ref<ToastElement[]>([])
 
+export type AppToastStore = typeof appToastStore
 export const appToastStore = {
   elements: shallowReadonly(_elements),
 
@@ -80,6 +81,10 @@ export const appToastStore = {
 
     return element
   },
+  openAsInfo: openAsColor.bind(null, 'info'),
+  openAsSuccess: openAsColor.bind(null, 'success'),
+  openAsWarning: openAsColor.bind(null, 'warning'),
+  openAsError: openAsColor.bind(null, 'error'),
 
   close(element: ToastElement) {
     element.props.modelValue = false
@@ -91,6 +96,15 @@ export const appToastStore = {
     if (index !== -1) elements.splice(index, 1)
   },
 } as const
+
+function openAsColor(
+  color: string,
+  message: ToastElement['message'],
+  toastProps: ToastProps = {}
+) {
+  toastProps.color = color
+  appToastStore.open(message, toastProps)
+}
 
 function onChangeAttach(
   this: typeof appToastStore,

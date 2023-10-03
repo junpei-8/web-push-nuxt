@@ -21,6 +21,10 @@ const toasts = appToastStore.elements
 </template>
 
 <style lang="scss" scoped>
+:deep(.v-overlay__content) {
+  min-width: 100%;
+}
+
 :deep(.v-snackbar__content) {
   padding-right: 8px;
 }

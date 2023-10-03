@@ -4,7 +4,7 @@ import '~/styles/global.scss'
 import type { WebPushNotificationsPostRequestBody } from '~/server/api/web-push/notifications.post'
 import {
   subscribeWebPush,
-  subscribeWebPushOnChangeVisibility,
+  subscribeWebPushOnVisible,
 } from '~/services/web-push'
 import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
@@ -13,7 +13,7 @@ import { appToastStore } from './stores/toast'
 subscribeWebPush()
 
 // 画面が再度 focus された時に Web Push に登録する
-onMounted(() => subscribeWebPushOnChangeVisibility({ withRequest: false }))
+onMounted(() => subscribeWebPushOnVisible({ withRequest: false }))
 
 // Web Push Notification を送信する際のカスタムプロップス
 const webPushNotificationPostRequestBodyStates =
@@ -33,19 +33,16 @@ async function sendWebPushNotification(event: Event) {
   if (isSendingWebPushNotification.value) return
   isSendingWebPushNotification.value = true
 
-  const result = await useLazyFetch('/api/web-push/notifications', {
+  const { error } = await useLazyFetch('/api/web-push/notifications', {
     method: 'POST',
     body: { ...webPushNotificationPostRequestBodyStates.value },
   })
 
-  if (result.error.value) {
-    appToastStore.open('Web Push Notification の送信に失敗しました', {
-      color: 'error',
-    })
+  if (error.value) {
+    appToastStore.openAsError('Web Push Notification の送信に失敗しました')
+    console.error(error.value)
   } else {
-    appToastStore.open('Web Push Notification を送信しました', {
-      color: 'success',
-    })
+    appToastStore.openAsSuccess('Web Push Notification を送信しました')
   }
 
   isSendingWebPushNotification.value = false
@@ -184,4 +181,3 @@ async function sendWebPushNotification(event: Event) {
   }
 }
 </style>
-./app-state
