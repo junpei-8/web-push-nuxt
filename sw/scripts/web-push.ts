@@ -5,7 +5,7 @@
 //
 
 interface NotificationData {
-  pathname: string
+  pathname?: string
 }
 
 const sw = self as unknown as ServiceWorkerGlobalScope
@@ -44,31 +44,56 @@ sw.addEventListener('notificationclick', function (event) {
         const matchedClientLength = matchedClients.length
         const noticeData: NotificationData = event.notification.data || {}
 
-        const pathname = noticeData.pathname || ''
-        const originUrl = sw.location.origin
-        const url = originUrl + pathname
-
-        console.log('clients', matchedClients)
+        const pathnameRegexp = /^https?:\/\/[^\/]+(\/[^?]*)/
+        const navigationPathname = noticeData.pathname || ''
+        const navigationPathnameLength = navigationPathname.length
 
         function focusClient(client: WindowClient) {
           if (!client.focus) return Promise.resolve(null)
           return client.focus().then(() => {
-            client.postMessage({ type: 'navigation', pathname })
+            client.postMessage({
+              type: 'navigation',
+              pathname: navigationPathname,
+            })
             return client
           })
         }
 
-        // 同一 Origin で開いているタブがなければ新規に開く
-        if (!matchedClientLength) return clients.openWindow(url)
+        function getPathnameMatchCount(string: string) {
+          let matchCount = 0
+          for (let i = 0; i < navigationPathnameLength; i++) {
+            if (navigationPathname[i] !== string[i]) break
+            matchCount++
+          }
+          return matchCount
+        }
+
+        let navigationClient: WindowClient | undefined
+        let navigationPathnameMatchCount = 0
 
         // 既に開いているタブがあればフォーカスする
         for (let i = 0; i < matchedClientLength; i++) {
           const client = matchedClients[i]
-          if (client.url === url) return focusClient(client)
+          const pathname = (client.url.match(pathnameRegexp) || [])[1] || '/'
+
+          // 既に開いているタブの中に同じ pathname があればフォーカスする
+          if (pathname === navigationPathname) return focusClient(client)
+
+          // frameType が 'none' の場合はスキップする
+          if (client.frameType === 'none') break
+
+          const pathnameMatchCount = getPathnameMatchCount(pathname)
+          if (navigationPathnameMatchCount <= pathnameMatchCount) {
+            navigationClient = client
+            navigationPathnameMatchCount = pathnameMatchCount
+          }
         }
 
-        // 既に開いているタブがない場合は最初のタブをフォーカスする
-        return focusClient(matchedClients[0])
+        // ナビゲーション先が存在したら Focus する
+        if (navigationClient) return focusClient(navigationClient)
+
+        // ナビゲーション先が存在しなかったら新しいタブを開く
+        return clients.openWindow(sw.location.origin + navigationPathname)
       })
   )
 })
