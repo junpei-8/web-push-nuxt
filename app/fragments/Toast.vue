@@ -22,7 +22,8 @@ const toasts = appToastStore.elements
 
 <style lang="scss" scoped>
 :deep(.v-overlay__content) {
-  min-width: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 :deep(.v-snackbar__content) {
