@@ -10,7 +10,7 @@ import Toast from './fragments/Toast.vue'
 import { appToastStore } from './stores/toast'
 
 // 起動時に Web Push に登録する
-subscribeWebPush()
+subscribeWebPush().catch(() => null)
 
 // 画面が再度 focus された時に Web Push に登録する
 onMounted(() => subscribeWebPushOnVisible({ withRequest: false }))

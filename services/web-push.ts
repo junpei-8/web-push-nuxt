@@ -80,7 +80,7 @@ export async function subscribeWebPushServiceWorker(
   options: SubscribeWebPushOptions
 ) {
   if (!IS_SUPPORTED_NOTIFICATION) {
-    throw new Error('Notification is not supported')
+    throw new Error('Web Push is not supported')
   }
 
   const noticePermission =
@@ -188,7 +188,7 @@ export function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
   if (_subscribingWebPushSw) return _subscribingWebPushSw
 
   // キャッシュが存在する場合
-  if (_webPushSwRegistration) return _webPushSwRegistration
+  if (_webPushSwRegistration) return Promise.resolve(_webPushSwRegistration)
 
   return (_subscribingWebPushSw = subscribeWebPushServiceWorker(
     options
@@ -199,8 +199,6 @@ export function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
 export function subscribeWebPushOnVisible(
   options: SubscribeWebPushOptions = {}
 ) {
-  if (!IS_SUPPORTED_NOTIFICATION) return
-
   const onChangeVisibility = () => {
     if (document.visibilityState === 'visible') {
       subscribeWebPush(options)
