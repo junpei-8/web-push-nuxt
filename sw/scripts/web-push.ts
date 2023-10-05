@@ -19,8 +19,6 @@ sw.addEventListener('activate', function (event) {
 })
 
 sw.addEventListener('push', function (event) {
-  sw.skipWaiting()
-
   const payload: Record<string, string> = event.data?.json()
 
   if (!payload) return
@@ -29,7 +27,12 @@ sw.addEventListener('push', function (event) {
 
   const data: NotificationData = { pathname }
 
-  event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
+  event.waitUntil(
+    Promise.all([
+      sw.clients.claim(),
+      sw.registration.showNotification(title, { body, icon, data }),
+    ])
+  )
 })
 
 sw.addEventListener('notificationclick', function (event) {
@@ -86,19 +89,20 @@ sw.addEventListener('notificationclick', function (event) {
           // frameType が 'none' の場合はスキップする
           if (client.frameType === 'none') continue
 
-          if (!navigationClient) navigationClient = client
-          // // pathname の文字列が近いクライアントを検索する
-          // const pathnameMatchCount = findPathnameMatchCount(pathname)
-          // if (pathnameMatchCount <= navigationPathnameMatchCount) continue
+          // if (!navigationClient) navigationClient = client
+          // pathname の文字列が近いクライアントを検索する
+          const pathnameMatchCount = findPathnameMatchCount(pathname)
+          if (pathnameMatchCount <= navigationPathnameMatchCount) continue
 
-          // // pathname との文字列の差分が小さいクライアントを優先する
-          // const pathnameDistance = navigationPathnameLength - pathname.length
-          // if (pathnameDistance >= navigationPathnameDifference) continue
+          // pathname との文字列の差分が小さいクライアントを優先する
+          const pathnameRawDistance = navigationPathnameLength - pathname.length
+          const pathnameDistance = Math.abs(pathnameRawDistance)
+          if (pathnameDistance >= navigationPathnameDifference) continue
 
-          // // より差分が少ないクライアントが見つかったら更新する
-          // navigationClient = client
-          // navigationPathnameDifference = pathnameDistance
-          // navigationPathnameMatchCount = pathnameMatchCount
+          // より差分が少ないクライアントが見つかったら更新する
+          navigationClient = client
+          navigationPathnameDifference = pathnameDistance
+          navigationPathnameMatchCount = pathnameMatchCount
         }
 
         // ナビゲーション先が存在したら Focus する
