@@ -1,0 +1,8 @@
+table web_push_subscriptions {
+  id serial [pk, not null, increment]
+  endpoint varchar(768) [not null, unique]
+  auth_key text [not null]
+  p256dh_key text [not null]
+  expired_at timestamp
+  created_at timestamp [not null, default: `(now())`]
+}
