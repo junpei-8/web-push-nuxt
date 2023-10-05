@@ -10,8 +10,6 @@ interface NotificationData {
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
-console.log('更新が入ると動かなくなるのではチェック')
-
 sw.addEventListener('install', function () {
   sw.skipWaiting()
 })
@@ -21,6 +19,8 @@ sw.addEventListener('activate', function (event) {
 })
 
 sw.addEventListener('push', function (event) {
+  sw.skipWaiting()
+
   const payload: Record<string, string> = event.data?.json()
 
   if (!payload) return
