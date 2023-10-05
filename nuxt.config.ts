@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   modules: [
-    '@vite-pwa/nuxt',
+    ['@vite-pwa/nuxt', pwaConfig],
     nuxtModuleSw({ inputDir: './sw/scripts', outputDir: './public/sw' }),
   ],
 
@@ -27,8 +27,6 @@ export default defineNuxtConfig({
   },
 
   app: appConfig,
-
-  pwa: pwaConfig,
 
   devtools: { enabled: true },
 
