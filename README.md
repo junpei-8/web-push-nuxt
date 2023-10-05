@@ -33,9 +33,7 @@
 
 #### Runtime
 
-- [Deno](https://deno.land)
-
-<!-- - [Node.js](https://nodejs.org) -->
+- [Node.js](https://nodejs.org)
 
 #### Database
 
@@ -55,7 +53,7 @@
 ## Setup
 
 ```bash
-bun i
+pnpm i
 ```
 
 <br/>
@@ -65,7 +63,7 @@ bun i
 Start the development server on `http://localhost:3000`:
 
 ```bash
-bun dev
+pnpm dev
 ```
 
 <br/>
@@ -75,13 +73,13 @@ bun dev
 Build the application for production:
 
 ```bash
-bun run build
+pnpm build
 ```
 
 Locally preview production build:
 
 ```bash
-bun preview
+pnpm preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
@@ -114,7 +112,7 @@ Using Vercel, you can set environment variables in the project settings.
 ### VAPID Keys
 
 ```bash
-bunx web-push generate-vapid-keys --json
+pnpx web-push generate-vapid-keys --json
 ```
 
 ### Database URL
