@@ -10,8 +10,8 @@ interface NotificationData {
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
-sw.addEventListener('install', function () {
-  sw.skipWaiting()
+sw.addEventListener('install', function (event) {
+  event.waitUntil(sw.skipWaiting())
 })
 
 sw.addEventListener('activate', function (event) {

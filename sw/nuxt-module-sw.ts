@@ -24,15 +24,9 @@ async function readTsConfig(
 ) {
   if (typeof tsConfig === 'object') return tsConfig
 
-  try {
-    const tsConfigPath = tsConfig ?? joinPath(inputPath, `../tsconfig.json`)
-    const tsConfigContent = await readFile(tsConfigPath, 'utf8')
-    return JSON.parse(tsConfigContent) as TypescriptCompilerOptions
-
-    // ↓ Return default options on error
-  } catch {
-    return {}
-  }
+  const tsConfigPath = tsConfig ?? joinPath(inputPath, `../tsconfig.json`)
+  const tsConfigContent = await readFile(tsConfigPath, 'utf8')
+  return JSON.parse(tsConfigContent) as TypescriptCompilerOptions
 }
 
 interface FilePath {
@@ -47,7 +41,7 @@ async function getAllFilePaths(
 
   const gettingPaths = files.map(async (file) => {
     const input = joinPath(inputDir, file)
-    const output = joinPath(outputDir, file).replace(/\.ts$/, '.js')
+    const output = joinPath(outputDir, file).replace(/ts$/, 'js')
     const stats = await stat(input)
 
     return stats.isDirectory()
@@ -64,51 +58,50 @@ async function transpileFile(
   tsConfig: TypescriptCompilerOptions,
   terserOptions: TerserMinifyOptions = {}
 ): Promise<void> {
-  try {
-    const fileContent = await readFile(inputPath, 'utf8')
+  const fileContent = await readFile(inputPath, 'utf8')
 
-    const jsContent = inputPath.endsWith('ts')
-      ? typescriptTranspile(fileContent, tsConfig)
-      : fileContent
+  const jsContent = inputPath.endsWith('ts')
+    ? typescriptTranspile(fileContent, tsConfig)
+    : fileContent
 
-    const minifiedJs = await terserMinify(jsContent, terserOptions)
-    const minifiedJsContent = minifiedJs.code
-    if (!minifiedJsContent) return
+  const minifiedJs = await terserMinify(jsContent, terserOptions)
+  const minifiedJsContent = minifiedJs.code
+  if (!minifiedJsContent) return
 
-    const outputDir = dirname(outputPath)
-    if (!existsSync(outputDir)) await mkdir(outputDir, { recursive: true })
+  const outputDir = dirname(outputPath)
+  if (!existsSync(outputDir)) await mkdir(outputDir, { recursive: true })
 
-    return writeFile(outputPath, minifiedJsContent, { encoding: 'utf-8' })
-
-    // ↓ This is the original code from the tutorial, but it doesn't work
-  } catch (error) {
-    console.error(`Error minifying ${inputPath}:`, error)
-    return
-  }
+  return writeFile(outputPath, minifiedJsContent, { encoding: 'utf-8' })
 }
 
 async function transpile(options: NuxtSwModuleOptions, changedPath?: string) {
-  const {
-    inputDir = './sw',
-    outputDir = inputDir + '/dist',
-    tsConfig: tsConfigOption,
-    terserOptions,
-  } = options
+  try {
+    const {
+      inputDir = './sw',
+      outputDir = inputDir + '/dist',
+      tsConfig: tsConfigOption,
+      terserOptions,
+    } = options
 
-  if (changedPath) {
-    const watchTargetPath = joinPath(inputDir, '../')
-    if (!changedPath.startsWith(watchTargetPath)) return
+    if (changedPath) {
+      const watchTargetPath = joinPath(inputDir, '../')
+      if (!changedPath.startsWith(watchTargetPath)) return
+    }
+
+    const [filePaths, tsConfig] = await Promise.all([
+      getAllFilePaths(inputDir, outputDir),
+      readTsConfig(inputDir, tsConfigOption),
+    ])
+
+    const transpile = (filePath: FilePath) =>
+      transpileFile(filePath, tsConfig, terserOptions)
+
+    await Promise.all(filePaths.map(transpile))
+
+    // エラー時はエラーメッセージを表示する
+  } catch (error) {
+    console.error(error)
   }
-
-  const [filePaths, tsConfig] = await Promise.all([
-    getAllFilePaths(inputDir, outputDir),
-    readTsConfig(inputDir, tsConfigOption),
-  ])
-
-  const transpile = (filePath: FilePath) =>
-    transpileFile(filePath, tsConfig, terserOptions)
-
-  await Promise.all(filePaths.map(transpile))
 }
 
 export default function nuxtSwModule(options: NuxtSwModuleOptions = {}) {
