@@ -27,12 +27,7 @@ sw.addEventListener('push', function (event) {
 
   const data: NotificationData = { pathname }
 
-  event.waitUntil(
-    Promise.all([
-      sw.clients.claim(),
-      sw.registration.showNotification(title, { body, icon, data }),
-    ])
-  )
+  event.waitUntil(sw.registration.showNotification(title, { body, icon, data }))
 })
 
 sw.addEventListener('notificationclick', function (event) {
