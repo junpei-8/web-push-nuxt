@@ -53,7 +53,6 @@ export default {
 
   workbox: {
     navigateFallback: null,
-    globIgnores: ['**/sw/**'],
   },
 
   devOptions: {
