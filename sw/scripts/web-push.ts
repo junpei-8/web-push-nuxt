@@ -11,7 +11,7 @@ interface NotificationData {
 const sw = self as unknown as ServiceWorkerGlobalScope
 
 sw.addEventListener('install', function (event) {
-  event.waitUntil(sw.skipWaiting())
+  sw.skipWaiting()
 })
 
 sw.addEventListener('activate', function (event) {
@@ -84,18 +84,19 @@ sw.addEventListener('notificationclick', function (event) {
           // frameType が 'none' の場合はスキップする
           if (client.frameType === 'none') continue
 
-          // pathname の文字列が近いクライアントを検索する
-          const pathnameMatchCount = findPathnameMatchCount(pathname)
-          if (pathnameMatchCount <= navigationPathnameMatchCount) continue
+          if (!navigationClient) navigationClient = client
+          // // pathname の文字列が近いクライアントを検索する
+          // const pathnameMatchCount = findPathnameMatchCount(pathname)
+          // if (pathnameMatchCount <= navigationPathnameMatchCount) continue
 
-          // pathname との文字列の差分が小さいクライアントを優先する
-          const pathnameDistance = navigationPathnameLength - pathname.length
-          if (pathnameDistance >= navigationPathnameDifference) continue
+          // // pathname との文字列の差分が小さいクライアントを優先する
+          // const pathnameDistance = navigationPathnameLength - pathname.length
+          // if (pathnameDistance >= navigationPathnameDifference) continue
 
-          // より差分が少ないクライアントが見つかったら更新する
-          navigationClient = client
-          navigationPathnameDifference = pathnameDistance
-          navigationPathnameMatchCount = pathnameMatchCount
+          // // より差分が少ないクライアントが見つかったら更新する
+          // navigationClient = client
+          // navigationPathnameDifference = pathnameDistance
+          // navigationPathnameMatchCount = pathnameMatchCount
         }
 
         // ナビゲーション先が存在したら Focus する

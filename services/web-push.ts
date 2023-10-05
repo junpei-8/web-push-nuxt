@@ -6,57 +6,14 @@ import type { WebPushSubscriptionsPostRequestBody } from '~/server/api/web-push/
 const _webPushSubscriptionEndpointCookieName = 'WebPushSubscriptionEndpoint'
 
 // Service Worker の登録情報をキャッシュする変数
+let _subscribingWebPushSw: Promise<ServiceWorkerRegistration> | null
 let _webPushSwRegistration: ServiceWorkerRegistration | null = null
-let _gettingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
-let _updatingWebPushSwRegistration: Promise<ServiceWorkerRegistration> | null
-
-/** Service Worker の Registration の型。 */
-export interface WebPushServiceWorkerRegistration {
-  type: 'initializing' | 'updating' | 'fresh' | 'cached'
-  data: ServiceWorkerRegistration
-}
-
-/** キャッシュされた Service Worker の登録情報を取得する */
-export async function getCachedWebPushServiceWorker(): Promise<WebPushServiceWorkerRegistration | null> {
-  // 更新中の場合
-  if (_updatingWebPushSwRegistration) {
-    return {
-      type: 'updating',
-      data: await _updatingWebPushSwRegistration,
-    }
-  }
-
-  // 初期化中の場合
-  if (_gettingWebPushSwRegistration) {
-    return {
-      type: 'initializing',
-      data: await _gettingWebPushSwRegistration,
-    }
-  }
-
-  // キャッシュが存在する場合
-  if (_webPushSwRegistration) {
-    return {
-      type: 'cached',
-      data: _webPushSwRegistration,
-    }
-  }
-
-  return null
-}
 
 /** Service Worker を更新する関数。 */
 export async function updateWebPushServiceWorker(
   registration: ServiceWorkerRegistration
 ) {
-  const updatingRegistration = registration.update().then(() => registration)
-
-  await (_updatingWebPushSwRegistration = updatingRegistration)
-
-  appToastStore.openAsInfo('Web Push の Service Worker を更新しました')
-
-  // 更新が完了したら 更新中を管理している変数を null にする。
-  _updatingWebPushSwRegistration = null
+  return registration.update().then(() => registration)
 }
 
 /** Service Worker からのメッセージをもとにナビゲーションを行う関数。 */
@@ -73,19 +30,14 @@ export function navigateByWebPushServiceWorkerRequest(event: MessageEvent) {
 }
 
 /** Web Push の Service Worker を読み込みブラウザに登録する関数。 */
-export async function registerWebPushServiceWorker(): Promise<WebPushServiceWorkerRegistration> {
+export async function registerWebPushServiceWorker() {
   if (!serviceWorker) throw new Error('Service Worker is not supported')
 
-  // キャッシュが存在する場合はキャッシュを返す。
-  const cachedRegistration = await getCachedWebPushServiceWorker()
-  if (cachedRegistration) return cachedRegistration
-
   // Web Push の Service Worker を登録する。
-  const gettingRegistration = (_gettingWebPushSwRegistration =
-    serviceWorker.register('/sw/web-push.js', {
-      scope: '/sw/',
-      updateViaCache: 'none',
-    }))
+  const gettingRegistration = serviceWorker.register('/sw/web-push.js', {
+    scope: '/sw/',
+    updateViaCache: 'none',
+  })
 
   appToastStore.openAsSuccess('Web Push の Service Worker を登録しました')
 
@@ -113,22 +65,35 @@ export async function registerWebPushServiceWorker(): Promise<WebPushServiceWork
     serviceWorker.removeEventListener('message', navigate)
   })
 
-  // Service Worker の登録情報をキャッシュする。
-  _webPushSwRegistration = registration
+  // Service Worker の登録情報をキャッシュして返却する。
+  return (_webPushSwRegistration = registration)
+}
 
-  // Service Worker の登録が完了したら初期化中を管理している変数を null にする。
-  _gettingWebPushSwRegistration = null
-
-  return {
-    data: registration,
-    type: 'fresh',
-  }
+/** Web Push の Service Worker を登録する関数のオプション */
+export interface SubscribeWebPushOptions {
+  /** @default true */
+  withRequest?: boolean
 }
 
 /** Web Push の Service Worker を登録する。 */
-export async function subscribeWebPushServiceWorker() {
+export async function subscribeWebPushServiceWorker(
+  options: SubscribeWebPushOptions
+) {
+  if (!IS_SUPPORTED_NOTIFICATION) {
+    throw new Error('Notification is not supported')
+  }
+
+  const noticePermission =
+    options.withRequest === false
+      ? Notification.permission
+      : await requestNotificationPermission()
+
+  if (noticePermission !== 'granted') {
+    throw new Error('Permission is not granted')
+  }
+
   // Web Push の Service Worker を登録する。
-  const { data: registration } = await registerWebPushServiceWorker()
+  const registration = await registerWebPushServiceWorker()
 
   // Push Manager に Web Push の情報を登録する。
   const subscription = await registration.pushManager.subscribe({
@@ -217,24 +182,17 @@ export async function subscribeWebPushServiceWorker() {
   return registration
 }
 
-/** Web Push を登録する際のオプション */
-export interface SubscribeWebPushOptions {
-  /** @default true */
-  withRequest?: boolean
-}
-
 /** Web Push を登録する。 */
-export async function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
-  if (!IS_SUPPORTED_NOTIFICATION) return null
+export function subscribeWebPush(options: SubscribeWebPushOptions = {}) {
+  // 既に登録中の場合
+  if (_subscribingWebPushSw) return _subscribingWebPushSw
 
-  const permission =
-    options.withRequest === false
-      ? Notification.permission
-      : await requestNotificationPermission()
+  // キャッシュが存在する場合
+  if (_webPushSwRegistration) return _webPushSwRegistration
 
-  if (permission !== 'granted') return null
-
-  return subscribeWebPushServiceWorker()
+  return (_subscribingWebPushSw = subscribeWebPushServiceWorker(
+    options
+  ).finally(() => (_subscribingWebPushSw = null)))
 }
 
 /** Visibility に更新があったときに Web Push を登録する */
