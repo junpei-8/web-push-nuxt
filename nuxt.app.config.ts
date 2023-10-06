@@ -13,7 +13,7 @@ export default {
 
     script: [
       {
-        textContent: `addEventListener('load', function () {
+        innerHTML: `addEventListener('load', function () {
 					if ('serviceWorker' in navigator) {
 						navigator.serviceWorker.register('/sw/web-push.js', {
 							scope: '/sw/',
