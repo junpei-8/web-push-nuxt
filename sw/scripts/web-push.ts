@@ -70,7 +70,7 @@ sw.addEventListener('notificationclick', function (event) {
 
         // ナビゲーション先の情報
         let navigationClient: WindowClient | undefined
-        let navigationPathnameDistance = -1
+        let navigationPathnameDistance = Infinity
         let navigationPathnameMatchCount = -1
 
         // 既に開いているタブがあればフォーカスする
