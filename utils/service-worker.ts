@@ -30,10 +30,11 @@ export async function getOrRegisterServiceWorker(
   )
 
   let registration = registrations.find(
-    (registration) => registration.scope === scope
+    (registration) => registration.scope === location.origin + scope
   )
 
   if (registration) {
+    appToastStore.openAsInfo('Found registration: ' + location.origin + scope)
     return registration
   }
 
