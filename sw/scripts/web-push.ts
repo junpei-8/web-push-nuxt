@@ -70,7 +70,7 @@ sw.addEventListener('notificationclick', function (event) {
 
         // ナビゲーション先の情報
         let navigationClient: WindowClient | undefined
-        let navigationPathnameDifference = 0
+        let navigationPathnameDistance = 0
         let navigationPathnameMatchCount = 0
 
         // 既に開いているタブがあればフォーカスする
@@ -90,13 +90,13 @@ sw.addEventListener('notificationclick', function (event) {
           if (pathnameMatchCount <= navigationPathnameMatchCount) continue
 
           // pathname との文字列の差分が小さいクライアントを優先する
-          const pathnameRawDistance = navigationPathnameLength - pathname.length
-          const pathnameDistance = Math.abs(pathnameRawDistance)
-          if (pathnameDistance >= navigationPathnameDifference) continue
+          const pathnameDiff = navigationPathnameLength - pathname.length
+          const pathnameDistance = Math.abs(pathnameDiff)
+          if (pathnameDistance >= navigationPathnameDistance) continue
 
           // より差分が少ないクライアントが見つかったら更新する
           navigationClient = client
-          navigationPathnameDifference = pathnameDistance
+          navigationPathnameDistance = pathnameDistance
           navigationPathnameMatchCount = pathnameMatchCount
         }
 

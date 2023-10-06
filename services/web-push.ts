@@ -34,15 +34,15 @@ export async function registerWebPushServiceWorker() {
   if (!serviceWorker) throw new Error('Service Worker is not supported')
 
   // Web Push の Service Worker を登録する。
-  const gettingRegistration = serviceWorker.register('/sw/web-push.js', {
-    scope: '/sw/',
-    updateViaCache: 'none',
-  })
-
-  appToastStore.openAsSuccess('Web Push の Service Worker を登録しました')
+  const gettingRegistration = appToastStore.openAsSuccess(
+    'Web Push の Service Worker を登録しました'
+  )
 
   // Service Worker の登録が完了するまで待つ。
-  const registration = await gettingRegistration
+  const registration = await getOrRegisterServiceWorker(
+    '/sw/web-push.js',
+    '/sw/web-push/'
+  )
 
   // 最新の Service Worker が有効になるまで待つ。
   await registration.update()

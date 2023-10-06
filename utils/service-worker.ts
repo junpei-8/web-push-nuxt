@@ -1,4 +1,57 @@
+import { appToastStore } from '~/app/stores/toast'
+
 export const serviceWorker = IS_CLIENT ? navigator.serviceWorker : null
+
+// export function getOrRegisterServiceWorker(
+//   scriptUrl: string,
+//   scope: string,
+//   options?: Omit<RegistrationOptions, 'scope'>
+// ) {
+//   return serviceWorker!
+//     .getRegistrations()
+//     .then(
+//       (registrations) =>
+//         registrations.find((registration) => registration.scope === scope) ||
+//         serviceWorker!.register(scriptUrl, { scope, ...options })
+//     )
+// }
+
+export async function getOrRegisterServiceWorker(
+  scriptUrl: string,
+  scope: string,
+  options?: Omit<RegistrationOptions, 'scope'>
+) {
+  const registrations = await serviceWorker!.getRegistrations()
+
+  console.log('Registrations: ' + registrations)
+  appToastStore.openAsInfo(
+    'Registrations: ' +
+      registrations.map((registration) => registration.scope).join(', ')
+  )
+
+  let registration = registrations.find(
+    (registration) => registration.scope === scope
+  )
+
+  if (registration) {
+    return registration
+  }
+
+  registration = await serviceWorker!.register(scriptUrl, {
+    scope,
+    ...options,
+  })
+
+  return registration
+
+  // return serviceWorker!
+  //   .getRegistrations()
+  //   .then(
+  //     (registrations) =>
+  //       registrations.find((registration) => registration.scope === scope) ||
+  //       serviceWorker!.register(scriptUrl, { scope, ...options })
+  //   )
+}
 
 export type UnregisterCallback = (isRegistrationFound: boolean) => void
 

@@ -10,18 +10,5 @@ export default {
       { rel: 'icon', href: '/app/favicon.svg', type: 'image/svg+xml' },
       { rel: 'apple-touch-icon', href: '/app/icon-apple-180x180.png' },
     ],
-
-    script: [
-      {
-        innerHTML: `addEventListener('load', function () {
-					if ('serviceWorker' in navigator) {
-						navigator.serviceWorker.register('/sw/web-push.js', {
-							scope: '/sw/',
-							updateViaCache: 'none',
-						})
-					}
-				}`,
-      },
-    ],
   },
 } satisfies NuxtConfig['app']
